@@ -32,8 +32,7 @@ class KToggleFullScreenAction;
  *
  * These actions should be used instead of hardcoding menubar and
  * toolbar items.  Using these actions helps your application easily
- * conform to the KDE Human Interface Guidelines.
- * @see https://hig.kde.org/
+ * conform to the <a href="https://develop.kde.org/hig/">KDE Human Interface Guidelines</a>.
  *
  * All of the documentation for QAction holds for KStandardAction
  * also.  When in doubt on how things work, check the QAction
@@ -241,28 +240,32 @@ KCONFIGWIDGETS_EXPORT QAction *_k_createInternal(StandardAction id, QObject *par
  * This overloads create() to allow using the new connect syntax
  * @note if you use @c OpenRecent as @p id, you should manually connect to the urlSelected(const QUrl &)
  * signal of the returned KRecentFilesAction instead or use KStandardAction::openRecent(Receiver *, Func).
+ *
+ * If not explicitely specified, @p connectionType will be AutoConnection for all actions
+ * except for ConfigureToolbars that will be QueuedConnection.
+ *
  * @see create(StandardAction, const QObject *, const char *, QObject *)
- * @since 5.23
+ * @since 5.23 (The connectionType argument was added in 5.95)
  */
 #ifdef K_DOXYGEN
-inline QAction *create(StandardAction id, const QObject *recvr, Func slot, QObject *parent)
+inline QAction *create(StandardAction id, const QObject *recvr, Func slot, QObject *parent, Qt::ConnectionType connectionType = -1)
 #else
 template<class Receiver, class Func>
 inline typename std::enable_if<!std::is_convertible<Func, const char *>::value, QAction>::type *
-create(StandardAction id, const Receiver *recvr, Func slot, QObject *parent)
+create(StandardAction id, const Receiver *recvr, Func slot, QObject *parent, Qt::ConnectionType connectionType = static_cast<Qt::ConnectionType>(-1))
 #endif
 {
     QAction *action = _k_createInternal(id, parent);
-    Qt::ConnectionType connectionType = Qt::AutoConnection;
-    if (id == ConfigureToolbars) { // bug #200815
-        connectionType = Qt::QueuedConnection;
-    }
-    QObject::connect(action, &QAction::triggered, recvr, slot, connectionType);
+    // ConfigureToolbars is special because of bug #200815
+    const Qt::ConnectionType defaultConnectionType = (id == ConfigureToolbars) ? Qt::QueuedConnection : Qt::AutoConnection;
+    QObject::connect(action, &QAction::triggered, recvr, slot, connectionType != static_cast<Qt::ConnectionType>(-1) ? connectionType : defaultConnectionType);
     return action;
 }
 
 /**
  * This will return the internal name of a given standard action.
+ *
+ * The returned const char* only contains ASCII characters.
  */
 KCONFIGWIDGETS_EXPORT const char *name(StandardAction id);
 

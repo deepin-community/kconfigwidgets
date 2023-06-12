@@ -1,8 +1,9 @@
 [KCM Locale]
 Name=Interlingua
 Name[ar]=الإنترلنغوا
-Name[ast]=Interlingua
 Name[az]=Interlingva
+Name[be]=Інтэрлінгва
+Name[be@latin]=Interlinhva
 Name[bg]=Интерлингва
 Name[bs]=interlingva
 Name[ca]=Interlingua
@@ -32,6 +33,7 @@ Name[id]=Interlingua
 Name[is]=Interlingua
 Name[it]=Interlingua
 Name[ja]=インターリングア
+Name[ka]=ინტერლინგვა
 Name[kk]=Интерлингва
 Name[km]=អ៊ីនធឺ​លីងហ្គោ
 Name[ko]=국제어(Interlingua)
@@ -61,7 +63,7 @@ Name[sv]=Interlingua
 Name[ta]=இன்டர்லிங்குவா
 Name[tg]=Забонҳо
 Name[th]=ภาษานานาชาติ
-Name[tr]=Interlingua
+Name[tr]=İnterlingua
 Name[tt]=Интерлингва
 Name[ug]=خەلقئارا تىل
 Name[uk]=Інтерлінгва

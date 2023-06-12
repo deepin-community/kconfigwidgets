@@ -24,27 +24,31 @@
 #include <QStyle>
 
 constexpr int defaultSchemeRow = 0;
-static bool s_overrideAutoSwitch = false;
-static QString s_autoColorSchemePath;
-#ifdef Q_OS_WIN
-WindowsMessagesNotifier KColorSchemeManagerPrivate::m_windowsMessagesNotifier = WindowsMessagesNotifier();
-#endif
 
-static void activateScheme(const QString &colorSchemePath, bool overrideAutoSwitch = true)
+void KColorSchemeManagerPrivate::activateSchemeInternal(const QString &colorSchemePath)
 {
-    s_overrideAutoSwitch = overrideAutoSwitch;
     // hint for plasma-integration to synchronize the color scheme with the window manager/compositor
     // The property needs to be set before the palette change because is is checked upon the
     // ApplicationPaletteChange event.
     qApp->setProperty("KDE_COLOR_SCHEME_PATH", colorSchemePath);
     if (colorSchemePath.isEmpty()) {
         qApp->setPalette(KColorScheme::createApplicationPalette(KSharedConfig::Ptr(nullptr)));
-        // enable auto-switch when Default color scheme is set
-        s_overrideAutoSwitch = false;
-        qApp->setPalette(KColorScheme::createApplicationPalette(KSharedConfig::openConfig(s_autoColorSchemePath)));
     } else {
         qApp->setPalette(KColorScheme::createApplicationPalette(KSharedConfig::openConfig(colorSchemePath)));
     }
+}
+
+// The meaning of the Default entry depends on the platform
+// On Windows and macOS we automatically apply Breeze/Breeze Dark depending on the system preference
+// On other platforms we apply a default KColorScheme
+QString KColorSchemeManagerPrivate::automaticColorSchemePath() const
+{
+#if defined(Q_OS_WIN) || defined(Q_OS_MACOS)
+    const QString colorSchemeId = m_colorSchemeWatcher.systemPreference() == KColorSchemeWatcher::PreferDark ? getDarkColorScheme() : getLightColorScheme();
+    return indexForSchemeId(colorSchemeId).data(KColorSchemeModel::PathRole).toString();
+#else
+    return QString();
+#endif
 }
 
 QIcon KColorSchemeManagerPrivate::createPreview(const QString &path)
@@ -81,33 +85,37 @@ QIcon KColorSchemeManagerPrivate::createPreview(const QString &path)
 KColorSchemeManagerPrivate::KColorSchemeManagerPrivate()
     : model(new KColorSchemeModel())
 {
-#ifdef Q_OS_WIN
-    QAbstractEventDispatcher::instance()->installNativeEventFilter(&m_windowsMessagesNotifier);
-#endif
 }
 
 KColorSchemeManager::KColorSchemeManager(QObject *parent)
     : QObject(parent)
     , d(new KColorSchemeManagerPrivate)
 {
-#ifdef Q_OS_WIN
-    connect(&d->getWindowsMessagesNotifier(), &WindowsMessagesNotifier::wm_colorSchemeChanged, this, [this](){
-        const QString colorSchemeToApply = d->getWindowsMessagesNotifier().preferDarkMode() ? d->getDarkColorScheme() : d->getLightColorScheme();
-        s_autoColorSchemePath = this->indexForScheme(colorSchemeToApply).data(Qt::UserRole).toString();
-        if (!s_overrideAutoSwitch) {
-            ::activateScheme(this->indexForSchemeId(colorSchemeToApply).data(KColorSchemeModel::PathRole).toString(), false);
-            if (d->m_autosaveChanges) {
-                saveSchemeToConfigFile(indexForScheme(colorSchemeToApply).data(Qt::DisplayRole).toString());
-            }
+#if defined(Q_OS_WIN) || defined(Q_OS_MACOS)
+    connect(&d->m_colorSchemeWatcher, &KColorSchemeWatcher::systemPreferenceChanged, this, [this]() {
+        if (!d->m_defaultSchemeSelected) {
+            // Don't override what has been manually set
+            return;
         }
+
+        d->activateSchemeInternal(d->automaticColorSchemePath());
     });
-    d->getWindowsMessagesNotifier().handleWMSettingChange();
 #endif
 
     KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup cg(config, "UiSettings");
-    auto scheme = cg.readEntry("ColorScheme", QString());
-    activateScheme(indexForScheme(scheme));
+    const QString scheme = cg.readEntry("ColorScheme", QString());
+
+    QString schemePath;
+
+    if (scheme.isEmpty() || scheme == QLatin1String("Default")) {
+        schemePath = d->automaticColorSchemePath();
+        d->m_defaultSchemeSelected = true;
+    } else {
+        schemePath = indexForScheme(scheme).data(KColorSchemeModel::PathRole).toString();
+        d->m_defaultSchemeSelected = false;
+    }
+    d->activateSchemeInternal(schemePath);
 }
 
 KColorSchemeManager::~KColorSchemeManager()
@@ -119,10 +127,10 @@ QAbstractItemModel *KColorSchemeManager::model() const
     return d->model.get();
 }
 
-QModelIndex KColorSchemeManager::indexForSchemeId(const QString &id) const
+QModelIndex KColorSchemeManagerPrivate::indexForSchemeId(const QString &id) const
 {
-    for (int i = 1; i < d->model->rowCount(); ++i) {
-        QModelIndex index = d->model->index(i);
+    for (int i = 1; i < model->rowCount(); ++i) {
+        QModelIndex index = model->index(i);
         if (index.data(KColorSchemeModel::IdRole).toString() == id) {
             return index;
         }
@@ -143,7 +151,7 @@ QModelIndex KColorSchemeManager::indexForScheme(const QString &name) const
     }
     for (int i = 1; i < d->model->rowCount(); ++i) {
         QModelIndex index = d->model->index(i);
-        if (index.data().toString() == name) {
+        if (index.data(KColorSchemeModel::NameRole).toString() == name) {
             return index;
         }
     }
@@ -156,18 +164,30 @@ KActionMenu *KColorSchemeManager::createSchemeSelectionMenu(const QIcon &icon, c
     KActionMenu *menu = new KActionMenu(icon, name, parent);
     QActionGroup *group = new QActionGroup(menu);
     connect(group, &QActionGroup::triggered, qApp, [this](QAction *action) {
-        ::activateScheme(action->data().toString());
-        if (d->m_autosaveChanges) {
-            saveSchemeToConfigFile(action->text());
+        const QString schemePath = action->data().toString();
+
+        if (schemePath.isEmpty()) {
+            // Reset to default
+            d->activateSchemeInternal(d->automaticColorSchemePath());
+            if (d->m_autosaveChanges) {
+                saveSchemeToConfigFile(QString());
+            }
+            d->m_defaultSchemeSelected = true;
+        } else {
+            d->activateSchemeInternal(schemePath);
+            if (d->m_autosaveChanges) {
+                saveSchemeToConfigFile(action->text());
+            }
+            d->m_defaultSchemeSelected = false;
         }
     });
     for (int i = 0; i < d->model->rowCount(); ++i) {
         QModelIndex index = d->model->index(i);
-        QAction *action = new QAction(index.data(Qt::DisplayRole).toString(), menu);
-        action->setData(index.data(Qt::UserRole));
+        QAction *action = new QAction(index.data(KColorSchemeModel::NameRole).toString(), menu);
+        action->setData(index.data(KColorSchemeModel::PathRole));
         action->setActionGroup(group);
         action->setCheckable(true);
-        if (index.data().toString() == selectedSchemeName) {
+        if (index.data(KColorSchemeModel::NameRole).toString() == selectedSchemeName) {
             action->setChecked(true);
         }
         menu->addAction(action);
@@ -177,7 +197,7 @@ KActionMenu *KColorSchemeManager::createSchemeSelectionMenu(const QIcon &icon, c
         // If no (valid) color scheme has been selected we select the default one
         groupActions[defaultSchemeRow]->setChecked(true);
     }
-    groupActions[defaultSchemeRow]->setIcon(QIcon::fromTheme("edit-undo"));
+    groupActions[defaultSchemeRow]->setIcon(QIcon::fromTheme(QStringLiteral("edit-undo")));
     connect(menu->menu(), &QMenu::aboutToShow, group, [group] {
         const auto actions = group->actions();
         for (QAction *action : actions) {
@@ -192,28 +212,34 @@ KActionMenu *KColorSchemeManager::createSchemeSelectionMenu(const QIcon &icon, c
 
 KActionMenu *KColorSchemeManager::createSchemeSelectionMenu(const QString &text, const QString &selectedSchemeName, QObject *parent)
 {
-    return createSchemeSelectionMenu(QIcon::fromTheme("preferences-desktop-color"), text, selectedSchemeName, parent);
+    return createSchemeSelectionMenu(QIcon::fromTheme(QStringLiteral("preferences-desktop-color")), text, selectedSchemeName, parent);
 }
 
 KActionMenu *KColorSchemeManager::createSchemeSelectionMenu(const QString &selectedSchemeName, QObject *parent)
 {
-    return createSchemeSelectionMenu(QIcon::fromTheme("preferences-desktop-color"), i18n("Color Scheme"), selectedSchemeName, parent);
+    return createSchemeSelectionMenu(QIcon::fromTheme(QStringLiteral("preferences-desktop-color")), i18n("Color Scheme"), selectedSchemeName, parent);
 }
 
 KActionMenu *KColorSchemeManager::createSchemeSelectionMenu(QObject *parent)
 {
-    return createSchemeSelectionMenu(QIcon::fromTheme("preferences-desktop-color"), i18n("Color Scheme"), QString(), parent);
+    KSharedConfigPtr config = KSharedConfig::openConfig();
+    KConfigGroup cg(config, "UiSettings");
+    auto scheme = cg.readEntry("ColorScheme", QString());
+
+    return createSchemeSelectionMenu(QIcon::fromTheme(QStringLiteral("preferences-desktop-color")), i18n("Color Scheme"), scheme, parent);
 }
 
 void KColorSchemeManager::activateScheme(const QModelIndex &index)
 {
-    if (index.isValid() && index.model() == d->model.get()) {
-        ::activateScheme(index.data(Qt::UserRole).toString());
+    const bool isDefaultEntry = index.data(KColorSchemeModel::PathRole).toString().isEmpty();
+
+    if (index.isValid() && index.model() == d->model.get() && !isDefaultEntry) {
+        d->activateSchemeInternal(index.data(KColorSchemeModel::PathRole).toString());
         if (d->m_autosaveChanges) {
-            saveSchemeToConfigFile(index.data(Qt::DisplayRole).toString());
+            saveSchemeToConfigFile(index.data(KColorSchemeModel::NameRole).toString());
         }
     } else {
-        ::activateScheme(QString());
+        d->activateSchemeInternal(d->automaticColorSchemePath());
         if (d->m_autosaveChanges) {
             saveSchemeToConfigFile(QString());
         }

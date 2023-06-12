@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(KF_VERSION "5.90.0") # handled by release scripts
-set(KF_DEP_VERSION "5.90.0") # handled by release scripts
+set(KF_VERSION "5.103.0") # handled by release scripts
+set(KF_DEP_VERSION "5.103.0") # handled by release scripts
 project(KConfigWidgets VERSION ${KF_VERSION})
 
 include(FeatureSummary)
-find_package(ECM 5.90.0  NO_MODULE)
+find_package(ECM 5.103.0  NO_MODULE)
 set_package_properties(ECM PROPERTIES TYPE REQUIRED DESCRIPTION "Extra CMake Modules." URL "https://commits.kde.org/extra-cmake-modules")
 feature_summary(WHAT REQUIRED_PACKAGES_NOT_FOUND FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
@@ -21,6 +21,8 @@ include(ECMSetupVersion)
 include(ECMGenerateHeaders)
 include(ECMAddQch)
 include(ECMQtDeclareLoggingCategory)
+include(ECMDeprecationSettings)
+include(CMakeDependentOption)
 
 set(REQUIRED_QT_VERSION 5.15.2)
 find_package(Qt${QT_MAJOR_VERSION} ${REQUIRED_QT_VERSION} CONFIG REQUIRED Widgets)
@@ -39,17 +41,13 @@ set(EXCLUDE_DEPRECATED_BEFORE_AND_AT 0 CACHE STRING "Control the range of deprec
 option(BUILD_QCH "Build API documentation in QCH format (for e.g. Qt Assistant, Qt Creator & KDevelop)" OFF)
 add_feature_info(QCH ${BUILD_QCH} "API documentation in QCH format (for e.g. Qt Assistant, Qt Creator & KDevelop)")
 
-option(BUILD_DESIGNERPLUGIN "Build plugin for Qt Designer" ON)
+cmake_dependent_option(BUILD_DESIGNERPLUGIN "Build plugin for Qt Designer" ON "NOT CMAKE_CROSSCOMPILING" OFF)
 add_feature_info(DESIGNERPLUGIN ${BUILD_DESIGNERPLUGIN} "Build plugin for Qt Designer")
 
 ecm_setup_version(PROJECT VARIABLE_PREFIX KCONFIGWIDGETS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kconfigwidgets_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5ConfigWidgetsConfigVersion.cmake"
                         SOVERSION 5)
-
-if (NOT ANDROID)
-  find_package(KF5Auth ${KF_DEP_VERSION} REQUIRED)
-endif()
 find_package(KF5CoreAddons ${KF_DEP_VERSION} REQUIRED)
 find_package(KF5Codecs ${KF_DEP_VERSION} REQUIRED)
 find_package(KF5Config ${KF_DEP_VERSION} REQUIRED)
@@ -58,11 +56,23 @@ find_package(KF5GuiAddons ${KF_DEP_VERSION} REQUIRED)
 find_package(KF5I18n ${KF_DEP_VERSION} REQUIRED)
 find_package(KF5WidgetsAddons ${KF_DEP_VERSION} REQUIRED)
 
-remove_definitions(-DQT_NO_CAST_FROM_ASCII)
-remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
-add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050f02)
-add_definitions(-DKF_DISABLE_DEPRECATED_BEFORE_AND_AT=0x055900)
-add_definitions(-DKWIDGETSADDONS_DISABLE_DEPRECATED_BEFORE_AND_AT=0x054D00) # We need KSelectAction::triggered(QString)
+if (NOT ANDROID AND NOT WIN32)
+    option(WITH_KAUTH "Build with KAuth support" ON)
+else()
+    set(WITH_KAUTH OFF)
+endif()
+
+set(HAVE_KAUTH FALSE)
+if (WITH_KAUTH)
+  find_package(KF5Auth ${KF_DEP_VERSION} REQUIRED)
+  set(HAVE_KAUTH TRUE)
+endif()
+
+ecm_set_disabled_deprecation_versions(
+    QT 5.15.2
+    KF 5.97.0
+    KWIDGETSADDONS 5.77.0  # We need KSelectAction::triggered(QString)
+)
 
 add_definitions(-DTRANSLATION_DOMAIN=\"kconfigwidgets5\")
 ki18n_install(po)
@@ -105,10 +115,6 @@ endif()
 
 include(CMakePackageConfigHelpers)
 
-set(HAVE_KAUTH FALSE)
-if (TARGET KF5::Auth)
-  set(HAVE_KAUTH TRUE)
-endif()
 configure_package_config_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/KF5ConfigWidgetsConfig.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/KF5ConfigWidgetsConfig.cmake"
@@ -126,7 +132,7 @@ install(EXPORT KF5ConfigWidgetsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" 
 
 install(FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kconfigwidgets_version.h
-  DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF} COMPONENT Devel
+  DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF}/KConfigWidgets COMPONENT Devel
 )
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)

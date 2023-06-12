@@ -53,13 +53,13 @@ public:
     /** @see KHamburgerMenu::setShowMenuBarAction() */
     void setShowMenuBarAction(QAction *showMenuBarAction);
 
-    /** @see KHamburgerMenu::addToMenu() */
-    void addToMenu(QMenu *menu);
+    /** @see KHamburgerMenu::insertIntoMenuBefore() */
+    void insertIntoMenuBefore(QMenu *menu, QAction *before);
 
-    /** @see KHamburgerMenu::avoidRedundancyWith() */
+    /** @see KHamburgerMenu::hideActionsOf() */
     void hideActionsOf(QWidget *widget);
 
-    /** @see KHamburgerMenu::stopAvoidRedundancyWith() */
+    /** @see KHamburgerMenu::showActionsOf() */
     void showActionsOf(QWidget *widget);
 
     /** @see KHamburgerMenu::createWidget() */
@@ -76,16 +76,14 @@ public:
      * @return either nullptr, @p from unchanged or a copy of @p from without the @p nonExclusives.
      *         In the last case, the caller gets ownership of this new copy with parent @p parent.
      */
-    QAction *actionWithExclusivesFrom(QAction *from,
-                                      QWidget *parent,
-                                      std::unordered_set<const QAction *> &nonExclusives) const;
+    QAction *actionWithExclusivesFrom(QAction *from, QWidget *parent, std::unordered_set<const QAction *> &nonExclusives) const;
 
     /**
      * @return a new menu with all actions from KHamburgerMenu::menu() which aren't
      * exempted from being displayed (@see hideActionsOf()).
-     * Next adds a special sub-menu by calling newMenuBarAdvertisementMenu() if this step
+     * Next adds the help menu.
+     * At last adds a special sub-menu by calling newMenuBarAdvertisementMenu() if this step
      * was not explicitly set to be skipped (@see KHamburgerMenu::setMenuBarAdvertised()).
-     * At last adds the help menu.
      */
     std::unique_ptr<QMenu> newMenu();
 
@@ -94,8 +92,7 @@ public:
      * not be visible or discoverable for the user
      * @see KHamburgerMenu::setMenuBarAdvertised()
      */
-    std::unique_ptr<QMenu> newMenuBarAdvertisementMenu(
-                                        std::unordered_set<const QAction *> &visibleActions) const;
+    std::unique_ptr<QMenu> newMenuBarAdvertisementMenu(std::unordered_set<const QAction *> &visibleActions);
 
     /** @see resetMenu() */
     inline void notifyMenuResetNeeded()
@@ -132,19 +129,17 @@ protected:
     void updateButtonStyle(QToolButton *hamburgerMenuButton) const;
 
 public:
-    KHamburgerMenu * const q_ptr;
+    KHamburgerMenu *const q_ptr;
 
 protected:
     /** @see newMenu(). Do not confuse this menu with QAction::menu(). */
     std::unique_ptr<QMenu> m_actualMenu;
     /** @see KHamburgerMenu::setMenuBarAdvertised() */
-    bool m_advertiseMenuBar;
+    bool m_advertiseMenuBar = true;
     /** @see newMenuBarAdvertisementMenu() */
     std::unique_ptr<QMenu> m_menuBarAdvertisementMenu;
     /** @see KHamburgerMenu::hideActionsOf() */
     std::forward_list<QPointer<const QWidget>> m_widgetsWithActionsToBeHidden;
-    /** Used in m_menuBarAdvertisementMenu to state the number of exclusive actions. */
-    mutable int m_exclusiveActionsCount;
     /** The menu that was used as a base when newMenu() was last called. With this we
      * make sure to reset the m_actualMenu if the q->menu() has been changed or replaced. */
     QPointer<QMenu> m_lastUsedMenu;
@@ -156,9 +151,14 @@ protected:
     /** @see KHamburgerMenu::setMenuBar() */
     QPointer<QMenuBar> m_menuBar;
     /** @see resetMenu() */
-    bool m_menuResetNeeded;
+    bool m_menuResetNeeded = false;
     /** @see KHamburgerMenu::setShowMenuBarAction */
     QPointer<QAction> m_showMenuBarAction;
+    /** Keeps track of changes to the "Show Menubar" button text. */
+    QString m_showMenuBarText;
+    QString m_showMenuBarWithAllActionsText;
+    /** Identifies if the application set an icon for "Help" menu. */
+    bool m_helpIconIsSet = false;
 };
 
 #endif // KHamburgerMenu_P_H

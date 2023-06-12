@@ -8,9 +8,13 @@
 #ifndef KCODECACTION_H
 #define KCODECACTION_H
 
-#include <KEncodingProber>
-#include <KSelectAction>
 #include <kconfigwidgets_export.h>
+
+#if KCONFIGWIDGETS_BUILD_DEPRECATED_SINCE(5, 102)
+#include <KEncodingProber>
+#endif
+
+#include <KSelectAction>
 #include <memory>
 
 class QTextCodec;
@@ -27,7 +31,9 @@ class KCONFIGWIDGETS_EXPORT KCodecAction : public KSelectAction
     Q_OBJECT
 
     Q_PROPERTY(QString codecName READ currentCodecName WRITE setCurrentCodec)
+#if KCONFIGWIDGETS_BUILD_DEPRECATED_SINCE(5, 103)
     Q_PROPERTY(int codecMib READ currentCodecMib)
+#endif
 
 public:
     explicit KCodecAction(QObject *parent, bool showAutoOptions = false);
@@ -39,30 +45,80 @@ public:
     ~KCodecAction() override;
 
 public:
+#if KCONFIGWIDGETS_ENABLE_DEPRECATED_SINCE(5, 103)
+    /**
+     * @deprecated since 5.103, use QTextCodec or QStringConverter.
+     */
+    KCONFIGWIDGETS_DEPRECATED_VERSION(5, 103, "Use QTextCodec or QStringConverter")
     int mibForName(const QString &codecName, bool *ok = nullptr) const;
-    QTextCodec *codecForMib(int mib) const;
+#endif
 
+#if KCONFIGWIDGETS_ENABLE_DEPRECATED_SINCE(5, 103)
+    /**
+     * @deprecated since 5.103, use QTextCodec or QStringConverter.
+     */
+    KCONFIGWIDGETS_DEPRECATED_VERSION(5, 103, "Use QTextCodec or QStringConverter")
+    QTextCodec *codecForMib(int mib) const;
+#endif
+
+#if KCONFIGWIDGETS_ENABLE_DEPRECATED_SINCE(5, 103)
+    /**
+     * @deprecated since 5.103, use currentCodecName
+     */
+    KCONFIGWIDGETS_DEPRECATED_VERSION(5, 103, "Use currentCodecName")
     QTextCodec *currentCodec() const;
+#endif
+
+#if KCONFIGWIDGETS_ENABLE_DEPRECATED_SINCE(5, 103)
+    /**
+     * @deprecated since 5.103, use setCurrentCodecName
+     */
+    KCONFIGWIDGETS_DEPRECATED_VERSION(5, 103, "Use setCurrentCodecName")
     bool setCurrentCodec(QTextCodec *codec);
+#endif
 
     QString currentCodecName() const;
     bool setCurrentCodec(const QString &codecName);
 
+#if KCONFIGWIDGETS_ENABLE_DEPRECATED_SINCE(5, 103)
+    /**
+     * @deprecated since 5.103, use currentCodecName
+     */
+    KCONFIGWIDGETS_DEPRECATED_VERSION(5, 103, "Use currentCodecName")
     int currentCodecMib() const;
-    bool setCurrentCodec(int mib);
+#endif
 
+#if KCONFIGWIDGETS_ENABLE_DEPRECATED_SINCE(5, 103)
+    /**
+     * @deprecated since 5.103, use setCurrentCodecName
+     */
+    KCONFIGWIDGETS_DEPRECATED_VERSION(5, 103, "Use setCurrentCodecName")
+    bool setCurrentCodec(int mib);
+#endif
+
+#if KCONFIGWIDGETS_ENABLE_DEPRECATED_SINCE(5, 102)
     /**
      * Applicable only if showAutoOptions in c'tor was true
      *
      * @returns KEncodingProber::None if specific encoding is selected, not autodetection, otherwise... you know it!
+     *
+     * @deprecated since 5.102, no known users.
      */
+    KCONFIGWIDGETS_DEPRECATED_VERSION(5, 102, "No known users")
     KEncodingProber::ProberType currentProberType() const;
+#endif
+
+#if KCONFIGWIDGETS_ENABLE_DEPRECATED_SINCE(5, 102)
     /**
      * Applicable only if showAutoOptions in c'tor was true
      *
      * KEncodingProber::Universal means 'Default' item
+     *
+     * @deprecated since 5.102, no known users.
      */
+    KCONFIGWIDGETS_DEPRECATED_VERSION(5, 102, "No known users")
     bool setCurrentProberType(KEncodingProber::ProberType);
+#endif
 
 Q_SIGNALS:
 #if KCONFIGWIDGETS_ENABLE_DEPRECATED_SINCE(5, 78)
@@ -75,6 +131,8 @@ Q_SIGNALS:
     KCONFIGWIDGETS_DEPRECATED_VERSION(5, 78, "Use KCodecAction::codecTriggered(QTextCodec *)")
     void triggered(QTextCodec *codec); // clazy:exclude=overloaded-signal
 #endif
+
+#if KCONFIGWIDGETS_ENABLE_DEPRECATED_SINCE(5, 103)
     /**
      * Specific (proper) codec was selected
      *
@@ -97,8 +155,12 @@ Q_SIGNALS:
      * @endcode
      *
      * @since 5.78
+     *
+     * @deprecated since 5.103, use codecNameTriggered()
      */
+    KCONFIGWIDGETS_DEPRECATED_VERSION(5, 103, "Use codecNameTriggered().")
     void codecTriggered(QTextCodec *codec);
+#endif
 
 #if KCONFIGWIDGETS_ENABLE_DEPRECATED_SINCE(5, 78)
     /**
@@ -112,6 +174,7 @@ Q_SIGNALS:
     void triggered(KEncodingProber::ProberType); // clazy:exclude=overloaded-signal
 #endif
 
+#if KCONFIGWIDGETS_ENABLE_DEPRECATED_SINCE(5, 102)
     /**
      * Autodetection has been selected.
      * emits KEncodingProber::Universal if Default was selected.
@@ -135,13 +198,26 @@ Q_SIGNALS:
      * @endcode
      *
      * @since 5.78
+     *
+     * @deprecated since 5.102, no known users.
      */
+    KCONFIGWIDGETS_DEPRECATED_VERSION(5, 102, "No known users")
     void encodingProberTriggered(KEncodingProber::ProberType);
+#endif
 
     /**
-     * If @p showAutoOptions is @c true, then better handle the signal
-     * encodingProberTriggered(KEncodingProber::ProberType)
-     * (or triggered(KEncodingProber::ProberType), to support also KF < 5.78).
+     * Emitted when a codec was selected
+     *
+     * @param name the name of the selected encoding.
+     *
+     * Note that textTriggered(const QString &) is emitted too (as defined in KSelectAction).
+     *
+     * @since 5.103
+     */
+    void codecNameTriggered(const QString &name);
+
+    /**
+     * Emitted when the 'Default' codec action is triggered.
      */
     void defaultItemTriggered();
 

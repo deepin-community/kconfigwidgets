@@ -3,14 +3,14 @@
 # Lukáš Tinkl <lukas@kde.org>, 2010, 2011, 2012.
 # Vít Pelčák <vit@pelcak.org>, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2019, 2020.
 # Tomáš Chvátal <tomas.chvatal@gmail.com>, 2012, 2013.
-# Vit Pelcak <vpelcak@suse.cz>, 2021.
+# Vit Pelcak <vit@pelcak.org>, 2021, 2022.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: kdelibs4\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
-"POT-Creation-Date: 2021-12-26 00:40+0000\n"
-"PO-Revision-Date: 2021-04-08 15:22+0200\n"
+"POT-Creation-Date: 2022-12-08 00:42+0000\n"
+"PO-Revision-Date: 2022-06-27 16:04+0200\n"
 "Last-Translator: Vit Pelcak <vpelcak@suse.cz>\n"
 "Language-Team: Czech <kde-i18n-doc@kde.org>\n"
 "Language: cs\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Lokalize 20.12.3\n"
+"X-Generator: Lokalize 22.04.2\n"
 "X-Language: cs_CZ\n"
 "X-Source-Language: en_US\n"
 
@@ -32,29 +32,29 @@ msgctxt "EMAIL OF TRANSLATORS"
 msgid "Your emails"
 msgstr "vit@pelcak.org,mkyral@email.cz"
 
-#: kcmodule.cpp:189
+#: kcmodule.cpp:198
 #, kde-format
 msgid "You will be asked to authenticate before saving"
 msgstr "Před uložením budete požádáni o ověření"
 
-#: kcmodule.cpp:193
+#: kcmodule.cpp:202
 #, kde-format
 msgid "You are not allowed to save the configuration"
 msgstr "Není vám dovoleno ukládat nastavení"
 
-#: kcodecaction.cpp:66
+#: kcodecaction.cpp:67
 #, kde-format
 msgctxt "Encodings menu"
 msgid "Default"
 msgstr "Výchozí"
 
-#: kcodecaction.cpp:74
+#: kcodecaction.cpp:75
 #, kde-format
 msgctxt "Encodings menu"
 msgid "Autodetect"
 msgstr "Automatická detekce"
 
-#: kcolorschememanager.cpp:200 kcolorschememanager.cpp:205
+#: kcolorschememanager.cpp:220 kcolorschememanager.cpp:229
 #, kde-format
 msgid "Color Scheme"
 msgstr "Barevné schéma"
@@ -64,10 +64,10 @@ msgstr "Barevné schéma"
 msgid "Default"
 msgstr "Výchozí"
 
-#: kcommandbar.cpp:584
+#: kcommandbar.cpp:560
 #, kde-format
 msgid "No commands matching the filter"
-msgstr ""
+msgstr "Příkazy odpovídající filtru"
 
 #: kconfigdialog.cpp:37
 #, kde-format
@@ -75,73 +75,73 @@ msgctxt "@title:window"
 msgid "Configure"
 msgstr "Nastavit"
 
-#: khamburgermenu.cpp:126
+#: khamburgermenu.cpp:125
 #, kde-format
 msgctxt "@action:inmenu General purpose menu"
 msgid "&Menu"
 msgstr "Na&bídka"
 
-#: khamburgermenu.cpp:342
+#: khamburgermenu.cpp:326
+#, kde-format
+msgctxt "@action:inmenu A menu item that advertises and enables the menubar"
+msgid "Show &Menubar with All Actions"
+msgstr "Zobrazit panel &nabídek se všemi činnostmi"
+
+#: khamburgermenu.cpp:352
 #, kde-format
 msgctxt "@action:inmenu A menu text advertising its contents (more features)."
-msgid "For %1 more action:"
-msgid_plural "For %1 more actions:"
-msgstr[0] "Pro %1 další činnost"
-msgstr[1] "Pro %1 další činnosti"
-msgstr[2] "Pro %1 dalších činností"
+msgid "More"
+msgstr "Více"
 
-#: khamburgermenu.cpp:345
+#: khamburgermenu.cpp:353
 #, kde-format
 msgctxt ""
 "@action:inmenu A section heading advertising the contents of the menu bar"
-msgid "%1 Menu Bar Exclusive Action"
-msgid_plural "%1 Menu Bar Exclusive Actions"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgid "More Actions"
+msgstr "Další činnosti"
 
-#: krecentfilesaction.cpp:68
+#: krecentfilesaction.cpp:71
 #, kde-format
 msgid "No Entries"
 msgstr "Žádné položky"
 
-#: krecentfilesaction.cpp:74
+#: krecentfilesaction.cpp:77
 #, kde-format
 msgid "Clear List"
 msgstr "Smazat seznam"
 
-#: kstandardaction.cpp:140
+#: kstandardaction.cpp:157
 #, kde-format
 msgctxt "go back"
 msgid "&Back"
 msgstr "&Zpět"
 
-#: kstandardaction.cpp:147
+#: kstandardaction.cpp:164
 #, kde-format
 msgctxt "go forward"
 msgid "&Forward"
 msgstr "&Vpřed"
 
-#: kstandardaction.cpp:154
+#: kstandardaction.cpp:171
 #, kde-format
 msgctxt "home page"
 msgid "&Home"
 msgstr "&Domů"
 
-#: kstandardaction.cpp:158
+#: kstandardaction.cpp:175
 #, kde-format
 msgctxt "show help"
 msgid "&Help"
 msgstr "Nápo&věda"
 
-#: kstandardaction.cpp:215
+#: kstandardaction.cpp:232
 #, kde-format
 msgid "Show Menubar<p>Shows the menubar again after it has been hidden</p>"
 msgstr ""
 "Zobrazovat hlavní nabídku<p>Znovu zobrazí hlavní nabídku, poté co byla "
 "skryta</p>"
 
-#: kstandardaction.cpp:236
+#: kstandardaction.cpp:253
 #, kde-format
 msgid ""
 "Show Statusbar<p>Shows the statusbar, which is the bar at the bottom of the "
@@ -307,8 +307,8 @@ msgid "&Replace..."
 msgstr "Na&hradit..."
 
 #: kstandardaction_p.h:58
-msgid "&Actual Size"
-msgstr "S&kutečná velikost"
+msgid "Zoom to &Actual Size"
+msgstr "Zvětšit n&a skutečnou velikost"
 
 #: kstandardaction_p.h:58
 msgid "View document at its actual size"
@@ -545,31 +545,31 @@ msgstr "&Přispějte"
 msgid "Open &Menu"
 msgstr "Otevřít na&bídku"
 
-#: ktipdialog.cpp:219
+#: ktipdialog.cpp:222
 #, kde-format
 msgctxt "@title:window"
 msgid "Tip of the Day"
 msgstr "Tip dne"
 
-#: ktipdialog.cpp:235
+#: ktipdialog.cpp:238
 #, kde-format
 msgctxt "@title"
 msgid "Did you know...?\n"
 msgstr "Věděli jste...?\n"
 
-#: ktipdialog.cpp:288
+#: ktipdialog.cpp:291
 #, kde-format
 msgctxt "@option:check"
 msgid "&Show tips on startup"
 msgstr "Zobrazovat tipy při &spuštění"
 
-#: ktipdialog.cpp:293
+#: ktipdialog.cpp:296
 #, kde-format
 msgctxt "@action:button Goes to previous tip"
 msgid "&Previous"
 msgstr "&Předchozí"
 
-#: ktipdialog.cpp:298
+#: ktipdialog.cpp:301
 #, kde-format
 msgctxt "@action:button Goes to next tip, opposite to previous"
 msgid "&Next"

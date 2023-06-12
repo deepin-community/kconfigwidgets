@@ -6,6 +6,9 @@
 */
 
 #include "kcolorscheme.h"
+#include "kcolorschemehelpers_p.h"
+
+#include "kconfigwidgets_debug.h"
 
 #include <KColorUtils>
 #include <KConfig>
@@ -13,60 +16,8 @@
 
 #include <QBrush>
 #include <QColor>
-#include <QCoreApplication>
-#if KCONFIGWIDGETS_BUILD_DEPRECATED_SINCE(5, 84)
-#include <QWidget>
-#endif
 
 // BEGIN StateEffects
-class StateEffects
-{
-public:
-    explicit StateEffects(QPalette::ColorGroup state, const KSharedConfigPtr &);
-    ~StateEffects()
-    {
-    } //{ delete chain; } not needed yet
-
-    QBrush brush(const QBrush &background) const;
-    QBrush brush(const QBrush &foreground, const QBrush &background) const;
-
-private:
-    enum EffectTypes {
-        Intensity,
-        Color,
-        Contrast,
-        NEffectTypes,
-    };
-
-    enum IntensityEffects {
-        IntensityNoEffect,
-        IntensityShade,
-        IntensityDarken,
-        IntensityLighten,
-        NIntensityEffects,
-    };
-
-    enum ColorEffects {
-        ColorNoEffect,
-        ColorDesaturate,
-        ColorFade,
-        ColorTint,
-        NColorEffects,
-    };
-
-    enum ContrastEffects {
-        ContrastNoEffect,
-        ContrastFade,
-        ContrastTint,
-        NContrastEffects,
-    };
-
-    int _effects[NEffectTypes];
-    double _amount[NEffectTypes];
-    QColor _color;
-    //     StateEffects *_chain; not needed yet
-};
-
 StateEffects::StateEffects(QPalette::ColorGroup state, const KSharedConfigPtr &config)
     : _color(0, 0, 0, 0) //, _chain(0) not needed yet
 {
@@ -146,27 +97,28 @@ QBrush StateEffects::brush(const QBrush &foreground, const QBrush &background) c
 // END StateEffects
 
 // BEGIN default colors
-struct SetDefaultColors {
-    int NormalBackground[3];
-    int AlternateBackground[3];
-    int NormalText[3];
-    int InactiveText[3];
-    int ActiveText[3];
-    int LinkText[3];
-    int VisitedText[3];
-    int NegativeText[3];
-    int NeutralText[3];
-    int PositiveText[3];
+struct SerializedColors {
+    QColor NormalBackground;
+    QColor AlternateBackground;
+    QColor NormalText;
+    QColor InactiveText;
+    QColor ActiveText;
+    QColor LinkText;
+    QColor VisitedText;
+    QColor NegativeText;
+    QColor NeutralText;
+    QColor PositiveText;
 };
 
-struct DecoDefaultColors {
-    int Focus[3];
-    int Hover[3];
+struct DecorationColors {
+    QColor Focus;
+    QColor Hover;
 };
 
 // clang-format off
-// these numbers come from the Breeze color scheme ([breeze]/colors/Breeze.colors)
-static const SetDefaultColors defaultViewColors = {
+// These numbers come from the default color scheme which is currently
+// Breeze Light ([breeze repo]/colors/BreezeLight.colors)
+static const SerializedColors defaultViewColors = {
     { 255, 255, 255 }, // Background
     { 247, 247, 247 }, // Alternate
     {  35,  38, 41  }, // Normal
@@ -179,7 +131,7 @@ static const SetDefaultColors defaultViewColors = {
     {  39, 174,  96 }  // Positive
 };
 
-static const SetDefaultColors defaultWindowColors = {
+static const SerializedColors defaultWindowColors = {
     { 239, 240, 241 }, // Background
     { 227, 229, 231 }, // Alternate
     {  35,  38, 41  }, // Normal
@@ -192,7 +144,7 @@ static const SetDefaultColors defaultWindowColors = {
     {  39, 174,  96 }  // Positive
 };
 
-static const SetDefaultColors defaultButtonColors = {
+static const SerializedColors defaultButtonColors = {
     { 252, 252, 252 }, // Background
     { 163, 212, 250 }, // Alternate
     {  35,  38, 41  }, // Normal
@@ -205,7 +157,7 @@ static const SetDefaultColors defaultButtonColors = {
     {  39, 174,  96 }  // Positive
 };
 
-static const SetDefaultColors defaultSelectionColors = {
+static const SerializedColors defaultSelectionColors = {
     {  61, 174, 233 }, // Background
     { 163, 212, 250 }, // Alternate
     { 255, 255, 255 }, // Normal
@@ -218,7 +170,7 @@ static const SetDefaultColors defaultSelectionColors = {
     {  23, 104,  57 }  // Positive
 };
 
-static const SetDefaultColors defaultTooltipColors = {
+static const SerializedColors defaultTooltipColors = {
     { 247, 247, 247 }, // Background
     { 239, 240, 241 }, // Alternate
     {  35,  38,  41 }, // Normal
@@ -231,7 +183,7 @@ static const SetDefaultColors defaultTooltipColors = {
     {  39, 174,  96 }  // Positive
 };
 
-static const SetDefaultColors defaultComplementaryColors = {
+static const SerializedColors defaultComplementaryColors = {
     {  42,  46,  50 }, // Background
     {  27,  30,  32 }, // Alternate
     { 252, 252, 252 }, // Normal
@@ -244,7 +196,7 @@ static const SetDefaultColors defaultComplementaryColors = {
     {  39, 174,  96 }  // Positive
 };
 
-static const SetDefaultColors defaultHeaderColors = {
+static const SerializedColors defaultHeaderColors = {
     { 222, 224, 226 }, // Background
     { 239, 240, 241 }, // Alternate
     {  35,  38,  41 }, // Normal
@@ -257,130 +209,126 @@ static const SetDefaultColors defaultHeaderColors = {
     {  39, 174,  96 }  // Positive
 };
 
-static const DecoDefaultColors defaultDecorationColors = {
+static const DecorationColors defaultDecorationColors = {
     {  61, 174, 233 }, // Focus
     { 147, 206, 233 }, // Hover
 };
-//END default colors
+// END default colors
 // clang-format off
-
-KSharedConfigPtr defaultConfig() {
-    // cache the value we'll return, since usually it's going to be the same value
-    static thread_local KSharedConfigPtr config;
-    // Read from the application's color scheme file (as set by KColorSchemeManager).
-    // If unset, this is equivalent to openConfig() and the system scheme is used.
-    const auto colorSchemePath = qApp->property("KDE_COLOR_SCHEME_PATH").toString();
-    if (!config || config->name() != colorSchemePath) {
-        config = KSharedConfig::openConfig(colorSchemePath);
-    }
-    return config;
-}
 
 //BEGIN KColorSchemePrivate
 class KColorSchemePrivate : public QSharedData
 {
 public:
-    explicit KColorSchemePrivate(const KSharedConfigPtr &, QPalette::ColorGroup, const char *, const SetDefaultColors &);
-    explicit KColorSchemePrivate(const KSharedConfigPtr &, QPalette::ColorGroup, const char *, const SetDefaultColors &, const QBrush &);
-    ~KColorSchemePrivate() {}
+    explicit KColorSchemePrivate(const KSharedConfigPtr &, QPalette::ColorGroup state, KColorScheme::ColorSet set);
+    ~KColorSchemePrivate()
+    {
+    }
 
     QBrush background(KColorScheme::BackgroundRole) const;
     QBrush foreground(KColorScheme::ForegroundRole) const;
     QBrush decoration(KColorScheme::DecorationRole) const;
     qreal contrast() const;
-private:
-    struct {
-        QBrush fg[KColorScheme::NForegroundRoles];
-        QBrush bg[KColorScheme::NBackgroundRoles];
-        QBrush deco[KColorScheme::NDecorationRoles];
-    } _brushes;
-    qreal _contrast;
 
-    void init(const KSharedConfigPtr &, QPalette::ColorGroup, const char *, const SetDefaultColors &);
+    struct Brushes {
+        std::array<QBrush, KColorScheme::NForegroundRoles> fg;
+        std::array<QBrush, KColorScheme::NBackgroundRoles> bg;
+        std::array<QBrush, KColorScheme::NDecorationRoles> deco;
+
+        bool operator==(const Brushes &b) const
+        {
+            return this == &b || (fg == b.fg && bg == b.bg && deco == b.deco);
+        }
+    } _brushes;
+
+    qreal _contrast;
 };
 
-#define DEFAULT(c) QColor( c[0], c[1], c[2] )
-#define  SET_DEFAULT(a) DEFAULT( defaults.a )
-#define DECO_DEFAULT(a) DEFAULT( defaultDecorationColors.a )
-
-KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
-        QPalette::ColorGroup state,
-        const char *group,
-        const SetDefaultColors &defaults)
+static SerializedColors loadSerializedColors(const KConfigGroup &group, const SerializedColors &defaults)
 {
-    KConfigGroup cfg(config, group);
-    if (state == QPalette::Inactive) {
-        KConfigGroup inactiveGroup = KConfigGroup(&cfg, "Inactive");
-        if (inactiveGroup.exists()) {
-            cfg = inactiveGroup;
-        }
+    constexpr std::array configMap = {
+        std::pair{"ForegroundNormal", &SerializedColors::NormalText},
+        std::pair{"ForegroundInactive", &SerializedColors::InactiveText},
+        std::pair{"ForegroundActive", &SerializedColors::ActiveText},
+        std::pair{"ForegroundLink", &SerializedColors::LinkText},
+        std::pair{"ForegroundVisited", &SerializedColors::VisitedText},
+        std::pair{"ForegroundNegative", &SerializedColors::NegativeText},
+        std::pair{"ForegroundNeutral", &SerializedColors::NeutralText},
+        std::pair{"ForegroundPositive", &SerializedColors::PositiveText},
+        std::pair{"BackgroundNormal", &SerializedColors::NormalBackground},
+        std::pair{"BackgroundAlternate", &SerializedColors::AlternateBackground},
+    };
+    SerializedColors loadedColors;
+    for (const auto &entry : configMap) {
+      loadedColors.*(entry.second) = group.readEntry(entry.first, defaults.*(entry.second));
     }
-
-    _contrast = KColorScheme::contrastF(config);
-
-    // loaded-from-config colors (no adjustment)
-    if (strcmp(group, "Colors:Header") == 0) { // For compatibility with color schemes made before ColorSet::Header was added
-        // Default to Window colors before using Header default colors
-        KConfigGroup windowCfg(config, "Colors:Window");
-        _brushes.bg[KColorScheme::NormalBackground] = cfg.readEntry("BackgroundNormal", 
-            windowCfg.readEntry("BackgroundNormal", SET_DEFAULT(NormalBackground)));
-        _brushes.bg[KColorScheme::AlternateBackground] = cfg.readEntry("BackgroundAlternate", 
-            windowCfg.readEntry("BackgroundAlternate", SET_DEFAULT(AlternateBackground)));
-    } else {
-        _brushes.bg[KColorScheme::NormalBackground] = cfg.readEntry("BackgroundNormal", SET_DEFAULT(NormalBackground));
-        _brushes.bg[KColorScheme::AlternateBackground] = cfg.readEntry("BackgroundAlternate", SET_DEFAULT(AlternateBackground));
-    }
-
-    // the rest
-    init(config, state, group, defaults);
+    return loadedColors;
 }
 
-KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
-        QPalette::ColorGroup state,
-        const char *group,
-        const SetDefaultColors &defaults,
-        const QBrush &tint)
+static DecorationColors loadDecorationColors(const KConfigGroup &group, const DecorationColors &defaults)
 {
-    KConfigGroup cfg(config, group);
-    if (state == QPalette::Inactive) {
-        KConfigGroup inactiveGroup = KConfigGroup(&cfg, "Inactive");
-        if (inactiveGroup.exists()) {
-            cfg = inactiveGroup;
-        }
-    }
-
-    _contrast = KColorScheme::contrastF(config);
-
-    // loaded-from-config colors
-    if (strcmp(group, "Colors:Header") == 0) { // For compatibility with color schemes made before ColorSet::Header was added
-        // Default to Window colors before using Header default colors
-        KConfigGroup windowCfg(config, "Colors:Window");
-        _brushes.bg[KColorScheme::NormalBackground] = cfg.readEntry("BackgroundNormal", 
-            windowCfg.readEntry("BackgroundNormal", SET_DEFAULT(NormalBackground)));
-        _brushes.bg[KColorScheme::AlternateBackground] = cfg.readEntry("BackgroundAlternate", 
-            windowCfg.readEntry("BackgroundAlternate", SET_DEFAULT(AlternateBackground)));
-    } else {
-        _brushes.bg[KColorScheme::NormalBackground] = cfg.readEntry("BackgroundNormal", SET_DEFAULT(NormalBackground));
-        _brushes.bg[KColorScheme::AlternateBackground] = cfg.readEntry("BackgroundAlternate", SET_DEFAULT(AlternateBackground));
-    }
-
-
-    // adjustment
-    _brushes.bg[KColorScheme::NormalBackground] = 
-        KColorUtils::tint(_brushes.bg[KColorScheme::NormalBackground].color(), tint.color(), 0.4);
-    _brushes.bg[KColorScheme::AlternateBackground] = 
-        KColorUtils::tint(_brushes.bg[KColorScheme::AlternateBackground].color(), tint.color(), 0.4);
-
-    // the rest
-    init(config, state, group, defaults);
+    DecorationColors colors;
+    colors.Focus = group.readEntry("DecorationFocus", defaults.Focus);
+    colors.Hover = group.readEntry("DecorationHover", defaults.Hover);
+    return colors;
 }
 
-void KColorSchemePrivate::init(const KSharedConfigPtr &config,
-                               QPalette::ColorGroup state,
-                               const char *group,
-                               const SetDefaultColors &defaults)
+KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config, QPalette::ColorGroup state, KColorScheme::ColorSet set)
 {
-    KConfigGroup cfg(config, group);
+    const char *groupName = nullptr;
+    SerializedColors defaultColors;
+    DecorationColors defaultDecoColors = defaultDecorationColors;
+    QBrush tint;
+    switch (set) {
+    case KColorScheme::Window:
+        groupName = "Colors:Window";
+        defaultColors = defaultWindowColors;
+        break;
+    case KColorScheme::Button:
+        groupName = "Colors:Button";
+        defaultColors = defaultButtonColors;
+        break;
+    case KColorScheme::Selection: {
+        const KConfigGroup inactiveEffectGroup(config, "ColorEffects:Inactive");
+        // NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
+        const bool inactiveSelectionEffect = inactiveEffectGroup.readEntry("ChangeSelectionColor", inactiveEffectGroup.readEntry("Enable", true));
+        // if enabled, inactive/disabled uses Window colors instead, ala gtk
+        // ...except tinted with the Selection:NormalBackground color so it looks more like selection
+        if (state == QPalette::Active || (state == QPalette::Inactive && !inactiveSelectionEffect)) {
+            groupName = "Colors:Selection";
+           defaultColors = defaultSelectionColors;
+        } else if (state == QPalette::Inactive) {
+            groupName = "Colors:Window";
+            defaultColors = defaultWindowColors;
+            tint = KColorSchemePrivate(config, QPalette::Active, KColorScheme::Selection)._brushes.bg[KColorScheme::NormalBackground];
+        } else { // disabled (...and still want this branch when inactive+disabled exists)
+            groupName = "Colors:Window";
+            defaultColors = defaultWindowColors;
+        }
+    } break;
+    case KColorScheme::Tooltip:
+        groupName = "Colors:Tooltip";
+        defaultColors = defaultTooltipColors;
+        break;
+    case KColorScheme::Complementary:
+        groupName = "Colors:Complementary";
+        defaultColors = defaultComplementaryColors;
+        break;
+    case KColorScheme::Header:
+        groupName = "Colors:Header";
+        defaultColors = loadSerializedColors(config->group("Colors:Window"), defaultHeaderColors);
+        defaultDecoColors = loadDecorationColors(config->group("Colors:Window"), defaultDecorationColors);
+        break;
+    case KColorScheme::NColorSets:
+        qCWarning(KCONFIG_WIDGETS_LOG) << "ColorSet::NColorSets is not a valid color set value to pass to KColorScheme::KColorScheme";
+        [[fallthrough]];
+    case KColorScheme::View:
+        groupName = "Colors:View";
+        defaultColors = defaultViewColors;
+        break;
+    }
+
+    KConfigGroup cfg(config, groupName);
     bool hasInactivePalette = false;
     if (state == QPalette::Inactive) {
         KConfigGroup inactiveGroup = KConfigGroup(&cfg, "Inactive");
@@ -390,43 +338,32 @@ void KColorSchemePrivate::init(const KSharedConfigPtr &config,
         }
     }
 
-    // loaded-from-config colors
-    if (strcmp(group, "Colors:Header") == 0) { // For compatibility with color schemes made before ColorSet::Header was added
-        // Default to Window colors before using Header default colors
-        KConfigGroup windowCfg(config, "Colors:Window");
-        _brushes.fg[KColorScheme::NormalText] = cfg.readEntry("ForegroundNormal", 
-            windowCfg.readEntry("ForegroundNormal", SET_DEFAULT(NormalText)));
-        _brushes.fg[KColorScheme::InactiveText] = cfg.readEntry("ForegroundInactive", 
-            windowCfg.readEntry("ForegroundInactive", SET_DEFAULT(InactiveText)));
-        _brushes.fg[KColorScheme::ActiveText] = cfg.readEntry("ForegroundActive", 
-            windowCfg.readEntry("ForegroundActive", SET_DEFAULT(ActiveText)));
-        _brushes.fg[KColorScheme::LinkText] = cfg.readEntry("ForegroundLink", 
-            windowCfg.readEntry("ForegroundLink", SET_DEFAULT(LinkText)));
-        _brushes.fg[KColorScheme::VisitedText] = cfg.readEntry("ForegroundVisited", 
-            windowCfg.readEntry("ForegroundVisited", SET_DEFAULT(VisitedText)));
-        _brushes.fg[KColorScheme::NegativeText] = cfg.readEntry("ForegroundNegative", 
-            windowCfg.readEntry("ForegroundNegative", SET_DEFAULT(NegativeText)));
-        _brushes.fg[KColorScheme::NeutralText] = cfg.readEntry("ForegroundNeutral", 
-            windowCfg.readEntry("ForegroundNeutral", SET_DEFAULT(NeutralText)));
-        _brushes.fg[KColorScheme::PositiveText] = cfg.readEntry("ForegroundPositive", 
-            windowCfg.readEntry("ForegroundPositive", SET_DEFAULT(PositiveText)));
+    _contrast = KColorScheme::contrastF(config);
 
-        _brushes.deco[KColorScheme::FocusColor] = cfg.readEntry("DecorationFocus", 
-            windowCfg.readEntry("DecorationFocus", DECO_DEFAULT(Focus)));
-        _brushes.deco[KColorScheme::HoverColor] = cfg.readEntry("DecorationHover", 
-            windowCfg.readEntry("DecorationHover", DECO_DEFAULT(Hover)));
-    } else {
-        _brushes.fg[KColorScheme::NormalText] = cfg.readEntry("ForegroundNormal", SET_DEFAULT(NormalText));
-        _brushes.fg[KColorScheme::InactiveText] = cfg.readEntry("ForegroundInactive", SET_DEFAULT(InactiveText));
-        _brushes.fg[KColorScheme::ActiveText] = cfg.readEntry("ForegroundActive", SET_DEFAULT(ActiveText));
-        _brushes.fg[KColorScheme::LinkText] = cfg.readEntry("ForegroundLink", SET_DEFAULT(LinkText));
-        _brushes.fg[KColorScheme::VisitedText] = cfg.readEntry("ForegroundVisited", SET_DEFAULT(VisitedText));
-        _brushes.fg[KColorScheme::NegativeText] = cfg.readEntry("ForegroundNegative", SET_DEFAULT(NegativeText));
-        _brushes.fg[KColorScheme::NeutralText] = cfg.readEntry("ForegroundNeutral", SET_DEFAULT(NeutralText));
-        _brushes.fg[KColorScheme::PositiveText] = cfg.readEntry("ForegroundPositive", SET_DEFAULT(PositiveText));
+     const SerializedColors loadedColors = loadSerializedColors(cfg, defaultColors);
+     const DecorationColors loadedDecoColors = loadDecorationColors(cfg, defaultDecoColors);
 
-        _brushes.deco[KColorScheme::FocusColor] = cfg.readEntry("DecorationFocus", DECO_DEFAULT(Focus));
-        _brushes.deco[KColorScheme::HoverColor] = cfg.readEntry("DecorationHover", DECO_DEFAULT(Hover));
+    _brushes.fg[KColorScheme::NormalText] = loadedColors.NormalText;
+    _brushes.fg[KColorScheme::InactiveText] = loadedColors.InactiveText;
+    _brushes.fg[KColorScheme::ActiveText] = loadedColors.ActiveText;
+    _brushes.fg[KColorScheme::LinkText] = loadedColors.LinkText;
+    _brushes.fg[KColorScheme::VisitedText] = loadedColors.VisitedText;
+    _brushes.fg[KColorScheme::NegativeText] = loadedColors.NegativeText;
+    _brushes.fg[KColorScheme::NeutralText] = loadedColors.NeutralText;
+    _brushes.fg[KColorScheme::PositiveText] = loadedColors.PositiveText;
+
+    _brushes.bg[KColorScheme::NormalBackground] = loadedColors.NormalBackground;
+    _brushes.bg[KColorScheme::AlternateBackground] = loadedColors.AlternateBackground;
+
+    _brushes.deco[KColorScheme::FocusColor] = loadedDecoColors.Focus;
+    _brushes.deco[KColorScheme::HoverColor] = loadedDecoColors.Hover;
+
+    if (tint != Qt::NoBrush) {
+        // adjustment
+        _brushes.bg[KColorScheme::NormalBackground] =
+            KColorUtils::tint(_brushes.bg[KColorScheme::NormalBackground].color(), tint.color(), 0.4);
+        _brushes.bg[KColorScheme::AlternateBackground] =
+            KColorUtils::tint(_brushes.bg[KColorScheme::AlternateBackground].color(), tint.color(), 0.4);
     }
 
     // apply state adjustments
@@ -497,77 +434,39 @@ qreal KColorSchemePrivate::contrast() const
 //END KColorSchemePrivate
 
 //BEGIN KColorScheme
-KColorScheme::KColorScheme(const KColorScheme &other) : d(other.d)
-{
-}
-
-KColorScheme &KColorScheme::operator=(const KColorScheme &other)
-{
-    d = other.d;
-    return *this;
-}
-
-KColorScheme::~KColorScheme()
-{
-}
+KColorScheme::KColorScheme(const KColorScheme &) = default;
+KColorScheme &KColorScheme::operator=(const KColorScheme &) = default;
+KColorScheme::KColorScheme(KColorScheme &&) = default;
+KColorScheme &KColorScheme::operator=(KColorScheme &&) = default;
+KColorScheme::~KColorScheme() = default;
 
 KColorScheme::KColorScheme(QPalette::ColorGroup state, ColorSet set, KSharedConfigPtr config)
+    : d(new KColorSchemePrivate(config ? config : defaultConfig(), state, set))
 {
-    if (!config) {
-        config = defaultConfig();
-    }
+}
 
-    switch (set) {
-    case Window:
-        d = new KColorSchemePrivate(config, state, "Colors:Window", defaultWindowColors);
-        break;
-    case Button:
-        d = new KColorSchemePrivate(config, state, "Colors:Button", defaultButtonColors);
-        break;
-    case Selection: {
-        KConfigGroup group(config, "ColorEffects:Inactive");
-        // NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
-        bool inactiveSelectionEffect = group.readEntry("ChangeSelectionColor", group.readEntry("Enable", true));
-        // if enabled, inactiver/disabled uses Window colors instead, ala gtk
-        // ...except tinted with the Selection:NormalBackground color so it looks more like selection
-        if (state == QPalette::Active || (state == QPalette::Inactive && !inactiveSelectionEffect)) {
-            d = new KColorSchemePrivate(config, state, "Colors:Selection", defaultSelectionColors);
-        } else if (state == QPalette::Inactive) {
-            d = new KColorSchemePrivate(config, state, "Colors:Window", defaultWindowColors,
-                                        KColorScheme(QPalette::Active, Selection, config).background());
-        } else { // disabled (...and still want this branch when inactive+disabled exists)
-            d = new KColorSchemePrivate(config, state, "Colors:Window", defaultWindowColors);
-        }
-    } break;
-    case Tooltip:
-        d = new KColorSchemePrivate(config, state, "Colors:Tooltip", defaultTooltipColors);
-        break;
-    case Complementary:
-        d = new KColorSchemePrivate(config, state, "Colors:Complementary", defaultComplementaryColors);
-        break;
-    case Header:
-        d = new KColorSchemePrivate(config, state, "Colors:Header", defaultHeaderColors);
-        break;
-    default:
-        d = new KColorSchemePrivate(config, state, "Colors:View", defaultViewColors);
-    }
+bool KColorScheme::operator==(const KColorScheme &other) const
+{
+    return d == other.d
+        || (d->_contrast == other.d->_contrast
+            && d->_brushes == other.d->_brushes)
+    ;
 }
 
 // static
+#if KCONFIGWIDGETS_BUILD_DEPRECATED_SINCE(5, 93)
 int KColorScheme::contrast()
 {
-    KConfigGroup g(KSharedConfig::openConfig(), "KDE");
+    KConfigGroup g(defaultConfig(), "KDE");
     return g.readEntry("contrast", 7);
 }
+#endif
 
 // static
 qreal KColorScheme::contrastF(const KSharedConfigPtr &config)
 {
-    if (config) {
-        KConfigGroup g(config, "KDE");
-        return 0.1 * g.readEntry("contrast", 7);
-    }
-    return 0.1 * (qreal)contrast();
+    KConfigGroup g(config ? config : defaultConfig(), "KDE");
+    return 0.1 * g.readEntry("contrast", 7);
 }
 
 QBrush KColorScheme::background(BackgroundRole role) const
@@ -730,113 +629,3 @@ QPalette KColorScheme::createApplicationPalette(const KSharedConfigPtr &config)
 }
 
 //END KColorScheme
-
-//BEGIN KStatefulBrush
-class KStatefulBrushPrivate : public QBrush // for now, just be a QBrush
-{
-public:
-    KStatefulBrushPrivate() : QBrush() {}
-    KStatefulBrushPrivate(const QBrush &brush) : QBrush(brush) {} // not explicit
-};
-
-KStatefulBrush::KStatefulBrush()
-{
-    d = new KStatefulBrushPrivate[QPalette::NColorGroups];
-}
-
-KStatefulBrush::KStatefulBrush(KColorScheme::ColorSet set, KColorScheme::ForegroundRole role,
-                               KSharedConfigPtr config)
-{
-    d = new KStatefulBrushPrivate[QPalette::NColorGroups];
-    d[QPalette::Active] = KColorScheme(QPalette::Active,   set, config).foreground(role);
-    d[QPalette::Disabled] = KColorScheme(QPalette::Disabled, set, config).foreground(role);
-    d[QPalette::Inactive] = KColorScheme(QPalette::Inactive, set, config).foreground(role);
-}
-
-KStatefulBrush::KStatefulBrush(KColorScheme::ColorSet set, KColorScheme::BackgroundRole role,
-                               KSharedConfigPtr config)
-{
-    d = new KStatefulBrushPrivate[QPalette::NColorGroups];
-    d[QPalette::Active] = KColorScheme(QPalette::Active,   set, config).background(role);
-    d[QPalette::Disabled] = KColorScheme(QPalette::Disabled, set, config).background(role);
-    d[QPalette::Inactive] = KColorScheme(QPalette::Inactive, set, config).background(role);
-}
-
-KStatefulBrush::KStatefulBrush(KColorScheme::ColorSet set, KColorScheme::DecorationRole role,
-                               KSharedConfigPtr config)
-{
-    d = new KStatefulBrushPrivate[QPalette::NColorGroups];
-    d[QPalette::Active] = KColorScheme(QPalette::Active,   set, config).decoration(role);
-    d[QPalette::Disabled] = KColorScheme(QPalette::Disabled, set, config).decoration(role);
-    d[QPalette::Inactive] = KColorScheme(QPalette::Inactive, set, config).decoration(role);
-}
-
-KStatefulBrush::KStatefulBrush(const QBrush &brush, KSharedConfigPtr config)
-{
-    if (!config) {
-        config = defaultConfig();
-    }
-    d = new KStatefulBrushPrivate[QPalette::NColorGroups];
-    d[QPalette::Active] = brush;
-    d[QPalette::Disabled] = StateEffects(QPalette::Disabled, config).brush(brush);
-    d[QPalette::Inactive] = StateEffects(QPalette::Inactive, config).brush(brush);
-}
-
-KStatefulBrush::KStatefulBrush(const QBrush &brush, const QBrush &background,
-                               KSharedConfigPtr config)
-{
-    if (!config) {
-        config = defaultConfig();
-    }
-    d = new KStatefulBrushPrivate[QPalette::NColorGroups];
-    d[QPalette::Active] = brush;
-    d[QPalette::Disabled] = StateEffects(QPalette::Disabled, config).brush(brush, background);
-    d[QPalette::Inactive] = StateEffects(QPalette::Inactive, config).brush(brush, background);
-}
-
-KStatefulBrush::KStatefulBrush(const KStatefulBrush &other)
-{
-    d = new KStatefulBrushPrivate[QPalette::NColorGroups];
-    d[QPalette::Active] = other.d[QPalette::Active];
-    d[QPalette::Disabled] = other.d[QPalette::Disabled];
-    d[QPalette::Inactive] = other.d[QPalette::Inactive];
-}
-
-KStatefulBrush::~KStatefulBrush()
-{
-    delete[] d;
-}
-
-KStatefulBrush &KStatefulBrush::operator=(const KStatefulBrush &other)
-{
-    d[QPalette::Active] = other.d[QPalette::Active];
-    d[QPalette::Disabled] = other.d[QPalette::Disabled];
-    d[QPalette::Inactive] = other.d[QPalette::Inactive];
-    return *this;
-}
-
-QBrush KStatefulBrush::brush(QPalette::ColorGroup state) const
-{
-    if (state >= QPalette::Active && state < QPalette::NColorGroups) {
-        return d[state];
-    } else {
-        return d[QPalette::Active];
-    }
-}
-
-QBrush KStatefulBrush::brush(const QPalette &pal) const
-{
-    return brush(pal.currentColorGroup());
-}
-
-#if KCONFIGWIDGETS_BUILD_DEPRECATED_SINCE(5, 84)
-QBrush KStatefulBrush::brush(const QWidget *widget) const
-{
-    if (widget) {
-        return brush(widget->palette());
-    } else {
-        return QBrush();
-    }
-}
-#endif
-//END KStatefulBrush

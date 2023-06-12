@@ -16,12 +16,14 @@
 #include <QWindow>
 
 ListenerContainer::ListenerContainer(KHamburgerMenuPrivate *hamburgerMenuPrivate)
-    : QObject{hamburgerMenuPrivate},
-    m_listeners{std::vector<std::unique_ptr<QObject>>(4)}
-{   }
+    : QObject{hamburgerMenuPrivate}
+    , m_listeners{std::vector<std::unique_ptr<QObject>>(4)}
+{
+}
 
 ListenerContainer::~ListenerContainer()
-{   }
+{
+}
 
 bool AddOrRemoveActionListener::eventFilter(QObject * /*watched*/, QEvent *event)
 {
@@ -50,6 +52,9 @@ bool ButtonPressListener::eventFilter(QObject *watched, QEvent *event)
         if (!menu) {
             return false;
         }
+        // ensure polished so the style can change the surfaceformat of the window which is
+        // not possible once the window has been created
+        menu->ensurePolished();
         menu->winId(); // trigger being a native widget already, to ensure windowHandle created
         // generic code if not known if the available parent widget is a native widget or not
         auto parentWindowHandle = watchedButton->windowHandle();
@@ -68,8 +73,7 @@ bool VisibleActionsChangeListener::eventFilter(QObject *watched, QEvent *event)
             static_cast<KHamburgerMenuPrivate *>(parent())->notifyMenuResetNeeded();
         }
     } else if (event->type() == QEvent::ActionAdded || event->type() == QEvent::ActionRemoved) {
-        Q_ASSERT_X(qobject_cast<QWidget *>(watched), "VisibileActionsChangeListener",
-            "The watched QObject is expected to be a QWidget.");
+        Q_ASSERT_X(qobject_cast<QWidget *>(watched), "VisibileActionsChangeListener", "The watched QObject is expected to be a QWidget.");
         if (static_cast<QWidget *>(watched)->isVisible()) {
             static_cast<KHamburgerMenuPrivate *>(parent())->notifyMenuResetNeeded();
         }

@@ -9,17 +9,19 @@
 
 #include <QAction>
 #include <QCoreApplication>
+#include <QGraphicsOpacityEffect>
+#include <QHeaderView>
 #include <QKeyEvent>
+#include <QLabel>
 #include <QLineEdit>
+#include <QMainWindow>
 #include <QPainter>
+#include <QScreen>
 #include <QSortFilterProxyModel>
 #include <QStyledItemDelegate>
 #include <QTextLayout>
 #include <QTreeView>
 #include <QVBoxLayout>
-#include <QHeaderView>
-#include <QLabel>
-#include <QGraphicsOpacityEffect>
 
 #include <KConfigGroup>
 #include <KFuzzyMatcher>
@@ -111,14 +113,14 @@ public:
     /**
      * Paints a single item's text
      */
-    static void paintItemText(QPainter *p, const QString &textt, const QRect &rect, const QStyleOptionViewItem &options, QVector<QTextLayout::FormatRange> formats)
+    static void
+    paintItemText(QPainter *p, const QString &textt, const QRect &rect, const QStyleOptionViewItem &options, QVector<QTextLayout::FormatRange> formats)
     {
         QString text = options.fontMetrics.elidedText(textt, Qt::ElideRight, rect.width());
 
         // set formats and font
         QTextLayout textLayout(text, options.font);
-        const QVector<QTextLayout::FormatRange> fmts = textLayout.formats();
-        formats.append(fmts);
+        formats.append(textLayout.formats());
         textLayout.setFormats(formats);
 
         // set alignment, rtls etc
@@ -151,30 +153,30 @@ public:
         textLayout.draw(p, pos);
     }
 
-    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override
+    void paint(QPainter *painter, const QStyleOptionViewItem &opt, const QModelIndex &index) const override
     {
         painter->save();
 
         /**
          * Draw everything, (widget, icon etc) except the text
          */
-        QStyleOptionViewItem optionCopy = option;
-        initStyleOption(&optionCopy, index);
-        optionCopy.text.clear(); // clear old text
+        QStyleOptionViewItem option = opt;
+        initStyleOption(&option, index);
+        option.text.clear(); // clear old text
         QStyle *style = option.widget->style();
-        style->drawControl(QStyle::CE_ItemViewItem, &optionCopy, painter, option.widget);
+        style->drawControl(QStyle::CE_ItemViewItem, &option, painter, option.widget);
 
         const int hMargin = style->pixelMetric(QStyle::PM_FocusFrameHMargin, &option, option.widget);
 
-        QRect outputRect = option.rect;
+        QRect textRect = option.rect;
 
-        const CommandBarFilterModel *model = static_cast<const CommandBarFilterModel*>(index.model());
+        const CommandBarFilterModel *model = static_cast<const CommandBarFilterModel *>(index.model());
         if (model->hasActionsWithIcons()) {
-            const int iconWidth = option.decorationSize.width() + hMargin;
+            const int iconWidth = option.decorationSize.width() + (hMargin * 2);
             if (option.direction == Qt::RightToLeft) {
-                outputRect.adjust(0, 0, -iconWidth, 0);
+                textRect.adjust(0, 0, -iconWidth, 0);
             } else {
-                outputRect.adjust(iconWidth, 0, 0, 0);
+                textRect.adjust(iconWidth, 0, 0, 0);
             }
         }
 
@@ -191,12 +193,12 @@ public:
         QVector<QTextLayout::FormatRange> formats;
         if (componentIdx > 0) {
             QTextCharFormat gray;
-            gray.setForeground(option.palette.color(QPalette::PlaceholderText));
+            gray.setForeground(option.palette.placeholderText());
             formats.append({0, componentIdx, gray});
         }
 
         QTextCharFormat fmt;
-        fmt.setForeground(option.palette.link().color());
+        fmt.setForeground(option.palette.link());
         fmt.setFontWeight(QFont::Bold);
 
         /**
@@ -205,12 +207,13 @@ public:
         const auto fmtRanges = KFuzzyMatcher::matchedRanges(m_filterString, str);
         QTextCharFormat f;
         f.setForeground(option.palette.link());
+        formats.reserve(formats.size() + fmtRanges.size());
         std::transform(fmtRanges.begin(), fmtRanges.end(), std::back_inserter(formats), [f, actionNameStart](const KFuzzyMatcher::Range &fr) {
             return QTextLayout::FormatRange{fr.start + actionNameStart, fr.length, f};
         });
 
-        outputRect.adjust(hMargin, 0, -hMargin, 0);
-        paintItemText(painter, original, outputRect, option, std::move(formats));
+        textRect.adjust(hMargin, 0, -hMargin, 0);
+        paintItemText(painter, original, textRect, option, std::move(formats));
 
         painter->restore();
     }
@@ -260,7 +263,7 @@ public:
         for (const QString &text : shortcutSegments) {
             int textWidth = option.fontMetrics.horizontalAdvance(text);
             textWidth += 2 * hMargin;
-            btns.append({ textWidth, text });
+            btns.append({textWidth, text});
         }
 
         int textHeight = option.fontMetrics.lineSpacing();
@@ -296,7 +299,7 @@ public:
                 painter->drawRoundedRect(shadowRect, 3.0, 3.0);
 
                 // draw rounded rect itself
-                painter->setBrush(option.palette.button());
+                painter->setBrush(option.palette.window());
                 painter->drawRoundedRect(outputRect, 3.0, 3.0);
 
                 painter->restore();
@@ -428,39 +431,12 @@ public:
         m_lineEdit.clear();
     }
 
-    /**
-     * Updates view size and position relative
-     * to the parent widget.
-     */
-    void updateViewGeometry(KCommandBar *q);
-
     void slotReturnPressed(KCommandBar *q);
 
     void setLastUsedActions();
 
     QStringList lastUsedActions() const;
 };
-
-void KCommandBarPrivate::updateViewGeometry(KCommandBar *q)
-{
-    if (!q->parentWidget()) {
-        return;
-    }
-    auto parentWidget = q->parentWidget();
-
-    const QSize centralSize = parentWidget->size();
-
-    const QSize viewMaxSize(centralSize.width() / 2.4, centralSize.height() / 2);
-
-    // Position should be central over window
-    const int xPos = std::max(0, (centralSize.width() - viewMaxSize.width()) / 2);
-    const int yPos = std::max(0, (centralSize.height() - viewMaxSize.height()) * 1 / 4);
-
-    const QPoint p(xPos, yPos);
-    q->move(p + parentWidget->pos());
-
-    q->setFixedSize(viewMaxSize);
-}
 
 void KCommandBarPrivate::slotReturnPressed(KCommandBar *q)
 {
@@ -502,7 +478,7 @@ void KCommandBarPrivate::slotReturnPressed(KCommandBar *q)
 
 void KCommandBarPrivate::setLastUsedActions()
 {
-    auto cfg = KSharedConfig::openConfig();
+    auto cfg = KSharedConfig::openStateConfig();
     KConfigGroup cg(cfg, "General");
 
     QStringList actionNames = cg.readEntry(QStringLiteral("CommandBarLastUsedActions"), QStringList());
@@ -600,6 +576,18 @@ KCommandBar::KCommandBar(QWidget *parent)
     });
 
     setHidden(true);
+
+    // Migrate last used action config to new location
+    auto cfg = KSharedConfig::openConfig();
+    KConfigGroup cg(cfg, "General");
+
+    QStringList actionNames = cg.readEntry(QStringLiteral("CommandBarLastUsedActions"), QStringList());
+
+    auto stateCfg = KSharedConfig::openStateConfig();
+    KConfigGroup stateCg(stateCfg, "General");
+    stateCg.writeEntry(QStringLiteral("CommandBarLastUsedActions"), actionNames);
+
+    cg.deleteEntry(QStringLiteral("CommandBarLastUsedActions"));
 }
 
 /**
@@ -608,9 +596,16 @@ KCommandBar::KCommandBar(QWidget *parent)
 KCommandBar::~KCommandBar()
 {
     auto lastUsedActions = d->lastUsedActions();
-    auto cfg = KSharedConfig::openConfig();
+    auto cfg = KSharedConfig::openStateConfig();
     KConfigGroup cg(cfg, "General");
     cg.writeEntry("CommandBarLastUsedActions", lastUsedActions);
+
+    // Explicitly remove installed event filters of children of d-pointer
+    // class, otherwise while KCommandBar is being torn down, an event could
+    // fire and the eventFilter() accesses d, which would cause a crash
+    // bug 452527
+    d->m_treeView.removeEventFilter(this);
+    d->m_lineEdit.removeEventFilter(this);
 }
 
 void KCommandBar::setActions(const QVector<ActionGroup> &actions)
@@ -621,9 +616,49 @@ void KCommandBar::setActions(const QVector<ActionGroup> &actions)
     d->m_model.refresh(actions);
     d->reselectFirst();
 
-    d->updateViewGeometry(this);
     show();
     setFocus();
+}
+
+void KCommandBar::show()
+{
+    QRect parentGeometry;
+    bool isInMainWindow = false;
+    if (const QWidget *parent = parentWidget()) {
+        parentGeometry = parent->geometry();
+        const QMainWindow *window = qobject_cast<const QMainWindow *>(parent);
+        if (window && window->centralWidget()) {
+            parentGeometry.setTop(window->mapToGlobal(window->centralWidget()->pos()).y());
+            parentGeometry.setHeight(window->centralWidget()->height());
+            isInMainWindow = true;
+        }
+    } else {
+        parentGeometry = screen()->availableGeometry();
+    }
+
+    static constexpr int minWidth = 500;
+    const int maxWidth = parentGeometry.width();
+    const int preferredWidth = maxWidth / 2.4;
+
+    static constexpr int minHeight = 250;
+    const int maxHeight = parentGeometry.height();
+    const int preferredHeight = maxHeight / 2;
+
+    const QSize size{std::min(maxWidth, std::max(preferredWidth, minWidth)), std::min(maxHeight, std::max(preferredHeight, minHeight))};
+
+    // resize() doesn't work here, so use setFixedSize() instead
+    setFixedSize(size);
+
+    if (!isInMainWindow && parentWidget()) {
+        const int y = std::max(0, (parentGeometry.height() - size.height()) * 1 / 6);
+        parentGeometry.setTop(y);
+    }
+
+    // set the position to the top-center of the parent
+    // just below the menubar/toolbar (if any)
+    const QPoint position{parentGeometry.center().x() - size.width() / 2, parentGeometry.y()};
+
+    popup(position);
 }
 
 bool KCommandBar::eventFilter(QObject *obj, QEvent *event)
