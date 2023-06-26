@@ -17,72 +17,71 @@
 # Serdar SOYTETİR <tulliana@gmail.com>, 2010, 2012.
 # Volkan Gezer <volkangezer@gmail.com>, 2013, 2014, 2017.
 # Kaan Ozdincer <kaanozdincer@gmail.com>, 2014.
+# Emir SARI <emir_sari@icloud.com>, 2022, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: kdelibs4\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
-"POT-Creation-Date: 2021-12-26 00:40+0000\n"
-"PO-Revision-Date: 2017-10-04 11:20+0000\n"
-"Last-Translator: Kaan <kaanozdincer@gmail.com>\n"
+"POT-Creation-Date: 2022-12-08 00:42+0000\n"
+"PO-Revision-Date: 2023-02-01 13:00+0300\n"
+"Last-Translator: Emir SARI <emir_sari@icloud.com>\n"
 "Language-Team: Turkish <kde-l10n-tr@kde.org>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Lokalize 2.0\n"
+"X-Generator: Lokalize 22.12.1\n"
 
 #, kde-format
 msgctxt "NAME OF TRANSLATORS"
 msgid "Your names"
-msgstr "Serdar Soytetir, Görkem Çetin, H. İbrahim Güngör, Volkan Gezer"
+msgstr ""
+"Serdar Soytetir, Görkem Çetin, H. İbrahim Güngör, Volkan Gezer, Emir SARI"
 
 #, kde-format
 msgctxt "EMAIL OF TRANSLATORS"
 msgid "Your emails"
 msgstr ""
 "tulliana@gmail.com, gorkem@kde.org, ibrahim@pardus.org.tr, volkangezer@gmail."
-"com"
+"com, emir_sari@icloud.com"
 
-#: kcmodule.cpp:189
+#: kcmodule.cpp:198
 #, kde-format
 msgid "You will be asked to authenticate before saving"
 msgstr "Kaydetmeden önce kimlik doğrulaması yapmanız istenecek"
 
-#: kcmodule.cpp:193
+#: kcmodule.cpp:202
 #, kde-format
 msgid "You are not allowed to save the configuration"
 msgstr "Yapılandırmayı kaydetme izniniz yok"
 
-#: kcodecaction.cpp:66
+#: kcodecaction.cpp:67
 #, kde-format
 msgctxt "Encodings menu"
 msgid "Default"
 msgstr "Öntanımlı"
 
-#: kcodecaction.cpp:74
+#: kcodecaction.cpp:75
 #, kde-format
 msgctxt "Encodings menu"
 msgid "Autodetect"
 msgstr "Otomatik Bul"
 
-#: kcolorschememanager.cpp:200 kcolorschememanager.cpp:205
-#, fuzzy, kde-format
-#| msgid "Shortcut Schemes"
+#: kcolorschememanager.cpp:220 kcolorschememanager.cpp:229
+#, kde-format
 msgid "Color Scheme"
-msgstr "Kısayol Şemaları"
+msgstr "Renk Şeması"
 
 #: kcolorschememodel.cpp:71
-#, fuzzy, kde-format
-#| msgctxt "Encodings menu"
-#| msgid "Default"
+#, kde-format
 msgid "Default"
 msgstr "Öntanımlı"
 
-#: kcommandbar.cpp:584
+#: kcommandbar.cpp:560
 #, kde-format
 msgid "No commands matching the filter"
-msgstr ""
+msgstr "Süzgeçle bir komut eşleşmiyor"
 
 #: kconfigdialog.cpp:37
 #, kde-format
@@ -90,72 +89,72 @@ msgctxt "@title:window"
 msgid "Configure"
 msgstr "Yapılandır"
 
-#: khamburgermenu.cpp:126
-#, fuzzy, kde-format
-#| msgid "Menu"
+#: khamburgermenu.cpp:125
+#, kde-format
 msgctxt "@action:inmenu General purpose menu"
 msgid "&Menu"
-msgstr "Menü"
+msgstr "&Menü"
 
-#: khamburgermenu.cpp:342
-#, fuzzy, kde-format
-#| msgid "Shortcut '%1' for action '%2'\n"
+#: khamburgermenu.cpp:326
+#, kde-format
+msgctxt "@action:inmenu A menu item that advertises and enables the menubar"
+msgid "Show &Menubar with All Actions"
+msgstr "M&enü Çubuğunu Tüm Eylemlerle Göster"
+
+#: khamburgermenu.cpp:352
+#, kde-format
 msgctxt "@action:inmenu A menu text advertising its contents (more features)."
-msgid "For %1 more action:"
-msgid_plural "For %1 more actions:"
-msgstr[0] "'%2' eylemi için %1 kısayolu\n"
-msgstr[1] "'%2' eylemi için %1 kısayolu\n"
+msgid "More"
+msgstr "Daha Fazla"
 
-#: khamburgermenu.cpp:345
+#: khamburgermenu.cpp:353
 #, kde-format
 msgctxt ""
 "@action:inmenu A section heading advertising the contents of the menu bar"
-msgid "%1 Menu Bar Exclusive Action"
-msgid_plural "%1 Menu Bar Exclusive Actions"
-msgstr[0] ""
-msgstr[1] ""
+msgid "More Actions"
+msgstr "Daha Fazla Eylem"
 
-#: krecentfilesaction.cpp:68
+#: krecentfilesaction.cpp:71
 #, kde-format
 msgid "No Entries"
 msgstr "Girdi Yok"
 
-#: krecentfilesaction.cpp:74
+#: krecentfilesaction.cpp:77
 #, kde-format
 msgid "Clear List"
 msgstr "Listeyi Temizle"
 
-#: kstandardaction.cpp:140
+#: kstandardaction.cpp:157
 #, kde-format
 msgctxt "go back"
 msgid "&Back"
 msgstr "&Geri"
 
-#: kstandardaction.cpp:147
+#: kstandardaction.cpp:164
 #, kde-format
 msgctxt "go forward"
 msgid "&Forward"
 msgstr "İ&leri"
 
-#: kstandardaction.cpp:154
+#: kstandardaction.cpp:171
 #, kde-format
 msgctxt "home page"
 msgid "&Home"
 msgstr "&Başlangıç"
 
-#: kstandardaction.cpp:158
+#: kstandardaction.cpp:175
 #, kde-format
 msgctxt "show help"
 msgid "&Help"
 msgstr "&Yardım"
 
-#: kstandardaction.cpp:215
+#: kstandardaction.cpp:232
 #, kde-format
 msgid "Show Menubar<p>Shows the menubar again after it has been hidden</p>"
 msgstr ""
 "Menü Çubuğunu Göster <p> Gizli duran menü çubuğunu yeniden gösterir</p>"
 
-#: kstandardaction.cpp:236
+#: kstandardaction.cpp:253
 #, kde-format
 msgid ""
 "Show Statusbar<p>Shows the statusbar, which is the bar at the bottom of the "
@@ -182,11 +181,11 @@ msgstr "Var olan bir belgeyi aç"
 
 #: kstandardaction_p.h:32
 msgid "Open &Recent"
-msgstr "&Son kullanılanı Aç"
+msgstr "&Son Kullanılanı Aç"
 
 #: kstandardaction_p.h:32
 msgid "Open a document which was recently opened"
-msgstr "Zaten açık olan bir belgeyi aç"
+msgstr "Yakınlarda açılmış olan bir belgeyi aç"
 
 #: kstandardaction_p.h:33
 msgid "&Save"
@@ -202,11 +201,11 @@ msgstr "&Farklı Kaydet..."
 
 #: kstandardaction_p.h:34
 msgid "Save document under a new name"
-msgstr "Belgeyi yeni bir isimle kaydet"
+msgstr "Belgeyi yeni bir adla kaydet"
 
 #: kstandardaction_p.h:35
 msgid "Re&vert"
-msgstr "Es&ki haline döndür"
+msgstr "Es&ki Haline Döndür"
 
 #: kstandardaction_p.h:35
 msgid "Revert unsaved changes made to document"
@@ -278,7 +277,7 @@ msgstr "Seçimi keserek panoya al"
 
 #: kstandardaction_p.h:45
 msgid "&Copy"
-msgstr "&Kopyala"
+msgstr "Ko&pyala"
 
 #: kstandardaction_p.h:45
 msgid "Copy selection to clipboard"
@@ -286,7 +285,7 @@ msgstr "Seçimi kopyalayarak panoya al"
 
 #: kstandardaction_p.h:46 kstandardaction_p.h:48
 msgid "&Paste"
-msgstr "Ya&pıştır"
+msgstr "&Yapıştır"
 
 #: kstandardaction_p.h:46 kstandardaction_p.h:48
 msgid "Paste clipboard content"
@@ -302,7 +301,7 @@ msgstr "&Tümünü Seç"
 
 #: kstandardaction_p.h:52
 msgid "Dese&lect"
-msgstr "&Seçme"
+msgstr "&Seçimi Kaldır"
 
 #: kstandardaction_p.h:53
 msgid "&Find..."
@@ -321,8 +320,8 @@ msgid "&Replace..."
 msgstr "Değ&iştir..."
 
 #: kstandardaction_p.h:58
-msgid "&Actual Size"
-msgstr "Ö&zgün Boyut"
+msgid "Zoom to &Actual Size"
+msgstr "Gerçek Boyut&a Yakınlaştır"
 
 #: kstandardaction_p.h:58
 msgid "View document at its actual size"
@@ -330,7 +329,7 @@ msgstr "Belgeyi kendi özgün boyutunda göster"
 
 #: kstandardaction_p.h:59
 msgid "&Fit to Page"
-msgstr "Sayfaya &Uydur"
+msgstr "Sayfaya Sığdı&r"
 
 #: kstandardaction_p.h:59
 msgid "Zoom to fit page in window"
@@ -338,7 +337,7 @@ msgstr "Sayfayı pencereye sığdır"
 
 #: kstandardaction_p.h:60
 msgid "Fit to Page &Width"
-msgstr "Sayfa &Genişliğine Uydur"
+msgstr "Sayfa &Genişliğine Sığdır"
 
 #: kstandardaction_p.h:60
 msgid "Zoom to fit page width in window"
@@ -346,7 +345,7 @@ msgstr "Sayfayı pencerenin genişliğine göre sığdır"
 
 #: kstandardaction_p.h:61
 msgid "Fit to Page &Height"
-msgstr "Sayfa &Yüksekliğine Uydur"
+msgstr "Sayfa &Yüksekliğine Sığdır"
 
 #: kstandardaction_p.h:61
 msgid "Zoom to fit page height in window"
@@ -354,29 +353,27 @@ msgstr "Sayfayı pencerenin yüksekliğine göre sığdır"
 
 #: kstandardaction_p.h:62
 msgid "Zoom &In"
-msgstr "Bü&yüt"
+msgstr "&Yakınlaştır"
 
 #: kstandardaction_p.h:63
 msgid "Zoom &Out"
-msgstr "&Küçült"
+msgstr "&Uzaklaştır"
 
 #: kstandardaction_p.h:64
 msgid "&Zoom..."
-msgstr "Ya&kınlaştır..."
+msgstr "&Yakınlaştır..."
 
 #: kstandardaction_p.h:64
 msgid "Select zoom level"
-msgstr "Büyütme düzeyini seçin"
+msgstr "Yakınlaştırma düzeyini seç"
 
 #: kstandardaction_p.h:65
 msgid "&Refresh"
-msgstr ""
+msgstr "&Yenile"
 
 #: kstandardaction_p.h:65
-#, fuzzy
-#| msgid "Redisplay document"
 msgid "Refresh document"
-msgstr "Belgeyi tekrar göster"
+msgstr "Belgeyi yenile"
 
 #: kstandardaction_p.h:67
 msgid "&Up"
@@ -404,15 +401,15 @@ msgstr "Sonraki sayfaya git"
 
 #: kstandardaction_p.h:74
 msgid "&Go To..."
-msgstr "&Git..."
+msgstr "G&it..."
 
 #: kstandardaction_p.h:75
 msgid "&Go to Page..."
-msgstr "Sa&yfaya Git..."
+msgstr "Sayfaya G&it..."
 
 #: kstandardaction_p.h:76
 msgid "&Go to Line..."
-msgstr "Sa&tıra Git..."
+msgstr "Satıra G&it..."
 
 #: kstandardaction_p.h:77
 msgid "&First Page"
@@ -448,11 +445,11 @@ msgstr "Belge içerisinde ileri git"
 
 #: kstandardaction_p.h:82
 msgid "&Add Bookmark"
-msgstr "Yer İmi &ekle"
+msgstr "Yer İmi &Ekle"
 
 #: kstandardaction_p.h:83
 msgid "&Edit Bookmarks..."
-msgstr "Yer İmlerini &Düzenle..."
+msgstr "Yer İmlerini Dü&zenle..."
 
 #: kstandardaction_p.h:85
 msgid "&Spelling..."
@@ -495,10 +492,8 @@ msgid "&Save Settings"
 msgstr "&Ayarları Kaydet"
 
 #: kstandardaction_p.h:94
-#, fuzzy
-#| msgid "Configure S&hortcuts..."
 msgid "Configure Keyboard S&hortcuts..."
-msgstr "&Kısayolları Yapılandır..."
+msgstr "&Klavye Kısayollarını Yapılandır..."
 
 #: kstandardaction_p.h:95
 #, kde-format
@@ -507,7 +502,7 @@ msgstr "%1 Uygulamasını &Yapılandır..."
 
 #: kstandardaction_p.h:96
 msgid "Configure Tool&bars..."
-msgstr "&Araç Çubuğunu Yapılandır..."
+msgstr "&Araç Çubuklarını Yapılandır..."
 
 #: kstandardaction_p.h:97
 msgid "Configure &Notifications..."
@@ -531,10 +526,8 @@ msgid "&Report Bug..."
 msgstr "&Hata Bildir..."
 
 #: kstandardaction_p.h:108
-#, fuzzy
-#| msgid "Configure Email..."
 msgid "Configure &Language..."
-msgstr "E-postayı Yapılandır..."
+msgstr "Dili Yapılandır..."
 
 #: kstandardaction_p.h:109
 #, kde-format
@@ -555,43 +548,41 @@ msgstr "&Yeniden Adlandır..."
 
 #: kstandardaction_p.h:113
 msgid "&Move to Trash"
-msgstr "&Çöpe Taşı"
+msgstr "&Çöp Kutusuna Taşı"
 
 #: kstandardaction_p.h:114
 msgid "&Donate"
 msgstr "&Bağış Yap"
 
 #: kstandardaction_p.h:115
-#, fuzzy
-#| msgid "Open &Recent"
 msgid "Open &Menu"
-msgstr "&Son kullanılanı Aç"
+msgstr "Me&nüyü Aç"
 
-#: ktipdialog.cpp:219
+#: ktipdialog.cpp:222
 #, kde-format
 msgctxt "@title:window"
 msgid "Tip of the Day"
 msgstr "Günün İpucu"
 
-#: ktipdialog.cpp:235
+#: ktipdialog.cpp:238
 #, kde-format
 msgctxt "@title"
 msgid "Did you know...?\n"
-msgstr "Biliyor muydunuz..?\n"
+msgstr "Biliyor muydunuz...?\n"
 
-#: ktipdialog.cpp:288
+#: ktipdialog.cpp:291
 #, kde-format
 msgctxt "@option:check"
 msgid "&Show tips on startup"
 msgstr "&Başlangıçta ipuçlarını göster"
 
-#: ktipdialog.cpp:293
+#: ktipdialog.cpp:296
 #, kde-format
 msgctxt "@action:button Goes to previous tip"
 msgid "&Previous"
 msgstr "&Önceki"
 
-#: ktipdialog.cpp:298
+#: ktipdialog.cpp:301
 #, kde-format
 msgctxt "@action:button Goes to next tip, opposite to previous"
 msgid "&Next"

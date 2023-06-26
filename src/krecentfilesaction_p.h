@@ -27,10 +27,6 @@ public:
     explicit KRecentFilesActionPrivate(KRecentFilesAction *parent)
         : q_ptr(parent)
     {
-        m_maxItems = 10;
-        m_noEntriesAction = nullptr;
-        clearSeparator = nullptr;
-        clearAction = nullptr;
     }
 
     virtual ~KRecentFilesActionPrivate()
@@ -41,12 +37,34 @@ public:
 
     void urlSelected(QAction *);
 
-    int m_maxItems;
-    QMap<QAction *, QString> m_shortNames;
-    QMap<QAction *, QUrl> m_urls;
-    QAction *m_noEntriesAction;
-    QAction *clearSeparator;
-    QAction *clearAction;
+    int m_maxItems = 10;
+
+    struct RecentActionInfo {
+        QAction *action = nullptr;
+        QUrl url;
+        QString shortName;
+    };
+    std::vector<RecentActionInfo> m_recentActions;
+
+    std::vector<RecentActionInfo>::iterator findByUrl(const QUrl &url)
+    {
+        return std::find_if(m_recentActions.begin(), m_recentActions.end(), [&url](const RecentActionInfo &info) {
+            return info.url == url;
+        });
+    }
+
+    std::vector<RecentActionInfo>::iterator findByAction(const QAction *action)
+    {
+        return std::find_if(m_recentActions.begin(), m_recentActions.end(), [action](const RecentActionInfo &info) {
+            return info.action == action;
+        });
+    }
+
+    void removeAction(std::vector<RecentActionInfo>::iterator it);
+
+    QAction *m_noEntriesAction = nullptr;
+    QAction *clearSeparator = nullptr;
+    QAction *clearAction = nullptr;
 
     KRecentFilesAction *const q_ptr;
 };

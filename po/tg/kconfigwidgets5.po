@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kdelibs4\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
-"POT-Creation-Date: 2021-12-26 00:40+0000\n"
+"POT-Creation-Date: 2022-12-08 00:42+0000\n"
 "PO-Revision-Date: 2019-09-15 21:27+0500\n"
 "Last-Translator: Victor Ibragimov <victor.ibragimov@gmail.com>\n"
 "Language-Team: English <kde-i18n-doc@kde.org>\n"
@@ -31,29 +31,29 @@ msgctxt "EMAIL OF TRANSLATORS"
 msgid "Your emails"
 msgstr "victor.ibragimov@gmail.com"
 
-#: kcmodule.cpp:189
+#: kcmodule.cpp:198
 #, kde-format
 msgid "You will be asked to authenticate before saving"
 msgstr "Пеш аз нигоҳдорӣ ба шумо санҷиши ҳаққоният пешниҳод карда мешавад"
 
-#: kcmodule.cpp:193
+#: kcmodule.cpp:202
 #, kde-format
 msgid "You are not allowed to save the configuration"
 msgstr "Шумо барои нигоҳ доштани танзимот иҷозат надоред"
 
-#: kcodecaction.cpp:66
+#: kcodecaction.cpp:67
 #, kde-format
 msgctxt "Encodings menu"
 msgid "Default"
 msgstr "Стандартӣ"
 
-#: kcodecaction.cpp:74
+#: kcodecaction.cpp:75
 #, kde-format
 msgctxt "Encodings menu"
 msgid "Autodetect"
 msgstr "Худмуайянкунии"
 
-#: kcolorschememanager.cpp:200 kcolorschememanager.cpp:205
+#: kcolorschememanager.cpp:220 kcolorschememanager.cpp:229
 #, kde-format
 msgid "Color Scheme"
 msgstr ""
@@ -65,7 +65,7 @@ msgstr ""
 msgid "Default"
 msgstr "Стандартӣ"
 
-#: kcommandbar.cpp:584
+#: kcommandbar.cpp:560
 #, kde-format
 msgid "No commands matching the filter"
 msgstr ""
@@ -76,71 +76,74 @@ msgctxt "@title:window"
 msgid "Configure"
 msgstr "Танзимот"
 
-#: khamburgermenu.cpp:126
+#: khamburgermenu.cpp:125
 #, kde-format
 msgctxt "@action:inmenu General purpose menu"
 msgid "&Menu"
 msgstr ""
 
-#: khamburgermenu.cpp:342
+#: khamburgermenu.cpp:326
+#, fuzzy, kde-format
+#| msgid "Show &Menubar"
+msgctxt "@action:inmenu A menu item that advertises and enables the menubar"
+msgid "Show &Menubar with All Actions"
+msgstr "&Нишон додани навори феҳрист"
+
+#: khamburgermenu.cpp:352
 #, kde-format
 msgctxt "@action:inmenu A menu text advertising its contents (more features)."
-msgid "For %1 more action:"
-msgid_plural "For %1 more actions:"
-msgstr[0] ""
-msgstr[1] ""
+msgid "More"
+msgstr ""
 
-#: khamburgermenu.cpp:345
+#: khamburgermenu.cpp:353
 #, kde-format
 msgctxt ""
 "@action:inmenu A section heading advertising the contents of the menu bar"
-msgid "%1 Menu Bar Exclusive Action"
-msgid_plural "%1 Menu Bar Exclusive Actions"
-msgstr[0] ""
-msgstr[1] ""
+msgid "More Actions"
+msgstr ""
 
-#: krecentfilesaction.cpp:68
+#: krecentfilesaction.cpp:71
 #, kde-format
 msgid "No Entries"
 msgstr "Ягон ворида нест"
 
-#: krecentfilesaction.cpp:74
+#: krecentfilesaction.cpp:77
 #, kde-format
 msgid "Clear List"
 msgstr "Пок кардани рӯйхат"
 
-#: kstandardaction.cpp:140
+#: kstandardaction.cpp:157
 #, kde-format
 msgctxt "go back"
 msgid "&Back"
 msgstr "&Ба қафо"
 
-#: kstandardaction.cpp:147
+#: kstandardaction.cpp:164
 #, kde-format
 msgctxt "go forward"
 msgid "&Forward"
 msgstr "&Ба пеш"
 
-#: kstandardaction.cpp:154
+#: kstandardaction.cpp:171
 #, kde-format
 msgctxt "home page"
 msgid "&Home"
 msgstr "&Асосӣ"
 
-#: kstandardaction.cpp:158
+#: kstandardaction.cpp:175
 #, kde-format
 msgctxt "show help"
 msgid "&Help"
 msgstr "&Кумак"
 
-#: kstandardaction.cpp:215
+#: kstandardaction.cpp:232
 #, kde-format
 msgid "Show Menubar<p>Shows the menubar again after it has been hidden</p>"
 msgstr ""
 "Нишон додани навори феҳрист<p>Навори менюро аз нав нишон медиҳад, агар он "
 "пинҳон карда шуда бошад</p>"
 
-#: kstandardaction.cpp:236
+#: kstandardaction.cpp:253
 #, kde-format
 msgid ""
 "Show Statusbar<p>Shows the statusbar, which is the bar at the bottom of the "
@@ -306,7 +309,9 @@ msgid "&Replace..."
 msgstr "&Ҷойгузин кардан..."
 
 #: kstandardaction_p.h:58
-msgid "&Actual Size"
+#, fuzzy
+#| msgid "&Actual Size"
+msgid "Zoom to &Actual Size"
 msgstr "&Андозаи ҳақиқӣ"
 
 #: kstandardaction_p.h:58
@@ -552,32 +557,38 @@ msgstr "&Дастгирии молӣ"
 msgid "Open &Menu"
 msgstr "&Кушодани маводи охирин"
 
-#: ktipdialog.cpp:219
+#: ktipdialog.cpp:222
 #, kde-format
 msgctxt "@title:window"
 msgid "Tip of the Day"
 msgstr "Маслиҳати рӯз"
 
-#: ktipdialog.cpp:235
+#: ktipdialog.cpp:238
 #, kde-format
 msgctxt "@title"
 msgid "Did you know...?\n"
 msgstr "Оё шумо медонед, ки...?\n"
 
-#: ktipdialog.cpp:288
+#: ktipdialog.cpp:291
 #, kde-format
 msgctxt "@option:check"
 msgid "&Show tips on startup"
 msgstr "&Нишон додани маслиҳат дар оғози кор"
 
-#: ktipdialog.cpp:293
+#: ktipdialog.cpp:296
 #, kde-format
 msgctxt "@action:button Goes to previous tip"
 msgid "&Previous"
 msgstr "&Қаблӣ"
 
-#: ktipdialog.cpp:298
+#: ktipdialog.cpp:301
 #, kde-format
 msgctxt "@action:button Goes to next tip, opposite to previous"
 msgid "&Next"
 msgstr "&Навбатӣ"
+
+#~ msgid "Switch Application &Language..."
+#~ msgstr "&Иваз кардани забони барнома..."
+
+#~ msgid "&Redisplay"
+#~ msgstr "&Аз нав нишон додан"

@@ -15,8 +15,8 @@
 #include <KConfigSkeleton>
 #include <KLocalizedString>
 #include <kconfigdialogmanager.h>
-#ifndef KCONFIGWIDGETS_NO_KAUTH
-#include <KAuthExecuteJob>
+#if KCONFIGWIDGETS_WITH_KAUTH
+#include <KAuth/ExecuteJob>
 #endif
 
 class KCModulePrivate
@@ -49,7 +49,7 @@ public:
     bool _firstshow : 1;
 
     bool _needsAuthorization : 1;
-#ifndef KCONFIGWIDGETS_NO_KAUTH
+#if KCONFIGWIDGETS_WITH_KAUTH
     KAuth::Action _authAction;
 #endif
 
@@ -83,8 +83,11 @@ void KCModule::showEvent(QShowEvent *ev)
 {
     if (d->_firstshow) {
         d->_firstshow = false;
-        QMetaObject::invokeMethod(this, "load", Qt::QueuedConnection);
-        QMetaObject::invokeMethod(this, "changed", Qt::QueuedConnection, Q_ARG(bool, false));
+        QMetaObject::invokeMethod(this, &KCModule::load, Qt::QueuedConnection);
+        auto changedFunc = [this]() {
+            changed(false);
+        };
+        QMetaObject::invokeMethod(this, changedFunc, Qt::QueuedConnection);
     }
 
     QWidget::showEvent(ev);
@@ -105,6 +108,9 @@ KConfigDialogManager *KCModule::addConfig(KCoreConfigSkeleton *config, QWidget *
     KConfigDialogManager *manager = new KConfigDialogManager(widget, config);
     manager->setObjectName(objectName());
     connect(manager, &KConfigDialogManager::widgetModified, this, &KCModule::widgetChanged);
+    connect(manager, &QObject::destroyed, this, [this, manager]() {
+        d->managers.removeOne(manager);
+    });
     d->managers.append(manager);
     return manager;
 }
@@ -115,6 +121,9 @@ KConfigDialogManager *KCModule::addConfig(KConfigSkeleton *config, QWidget *widg
     KConfigDialogManager *manager = new KConfigDialogManager(widget, config);
     manager->setObjectName(objectName());
     connect(manager, &KConfigDialogManager::widgetModified, this, &KCModule::widgetChanged);
+    connect(manager, &QObject::destroyed, this, [this, manager]() {
+        d->managers.removeOne(manager);
+    });
     d->managers.append(manager);
     return manager;
 }
@@ -123,7 +132,7 @@ KConfigDialogManager *KCModule::addConfig(KConfigSkeleton *config, QWidget *widg
 void KCModule::setNeedsAuthorization(bool needsAuth)
 {
     d->_needsAuthorization = needsAuth;
-#ifndef KCONFIGWIDGETS_NO_KAUTH
+#if KCONFIGWIDGETS_WITH_KAUTH
     if (needsAuth && d->_about) {
         d->_authAction = KAuth::Action(QLatin1String("org.kde.kcontrol.") + d->_about->componentName() + QLatin1String(".save"));
         d->_needsAuthorization = d->_authAction.isValid();
@@ -159,7 +168,7 @@ bool KCModule::defaultsIndicatorsVisible() const
     return d->_defaultsIndicatorsVisible;
 }
 
-#ifndef KCONFIGWIDGETS_NO_KAUTH
+#if KCONFIGWIDGETS_WITH_KAUTH
 void KCModule::setAuthAction(const KAuth::Action &action)
 {
     if (!action.isValid()) {

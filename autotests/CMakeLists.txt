@@ -1,6 +1,8 @@
 
 find_package(Qt${QT_MAJOR_VERSION} ${REQUIRED_QT_VERSION} CONFIG REQUIRED Test)
 
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+
 include(ECMAddTests)
 
 ecm_add_test(kstandardactiontest.cpp LINK_LIBRARIES Qt${QT_MAJOR_VERSION}::Test KF5::ConfigWidgets)
@@ -37,5 +39,6 @@ endforeach()
 
 ecm_add_test(klanguagenametest.cpp LINK_LIBRARIES Qt${QT_MAJOR_VERSION}::Test KF5::ConfigWidgets)
 ecm_add_test(kcolorschemetest.cpp LINK_LIBRARIES Qt${QT_MAJOR_VERSION}::Test KF5::ConfigWidgets)
+ecm_add_test(kcmdbartest.cpp LINK_LIBRARIES Qt${QT_MAJOR_VERSION}::Test KF5::ConfigWidgets)
 
 ecm_add_test(krecentfilesactiontest.cpp TEST_NAME "krecentfilesaction_test" LINK_LIBRARIES Qt${QT_MAJOR_VERSION}::Test KF5::ConfigWidgets)

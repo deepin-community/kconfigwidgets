@@ -5,18 +5,19 @@ Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
 Uploaders: Aurélien COUDERC <coucouf@debian.org>,
            Norbert Preining <norbert@preining.info>,
 Build-Depends: cmake (>= 3.16~),
+               dbus <!nocheck>,
                debhelper-compat (= 13),
                doxygen,
-               extra-cmake-modules (>= 5.90.0~),
+               extra-cmake-modules (>= 5.103.0~),
                gettext,
-               libkf5auth-dev (>= 5.90.0~),
-               libkf5codecs-dev (>= 5.90.0~),
-               libkf5config-dev (>= 5.90.0~),
-               libkf5coreaddons-dev (>= 5.90.0~),
-               libkf5doctools-dev (>= 5.90.0~),
-               libkf5guiaddons-dev (>= 5.90.0~),
-               libkf5i18n-dev (>= 5.90.0~),
-               libkf5widgetsaddons-dev (>= 5.90.0~),
+               libkf5auth-dev (>= 5.103.0~),
+               libkf5codecs-dev (>= 5.103.0~),
+               libkf5config-dev (>= 5.103.0~),
+               libkf5coreaddons-dev (>= 5.103.0~),
+               libkf5doctools-dev (>= 5.103.0~),
+               libkf5guiaddons-dev (>= 5.103.0~),
+               libkf5i18n-dev (>= 5.103.0~),
+               libkf5widgetsaddons-dev (>= 5.103.0~),
                libqt5sql5-sqlite,
                pkg-kde-tools (>= 0.15.15ubuntu1~),
                qtbase5-dev (>= 5.15.2~),
@@ -24,7 +25,7 @@ Build-Depends: cmake (>= 3.16~),
                qttools5-dev-tools (>= 5.4),
                xauth <!nocheck>,
                xvfb <!nocheck>,
-Standards-Version: 4.6.0
+Standards-Version: 4.6.2
 Homepage: https://invent.kde.org/frameworks/kconfigwidgets
 Vcs-Browser: https://salsa.debian.org/qt-kde-team/kde/kconfigwidgets
 Vcs-Git: https://salsa.debian.org/qt-kde-team/kde/kconfigwidgets.git
@@ -33,7 +34,7 @@ Rules-Requires-Root: no
 Package: libkf5configwidgets-data
 Architecture: all
 Multi-Arch: foreign
-Depends: ${misc:Depends}, ${perl:Depends}
+Depends: ${misc:Depends}, ${perl:Depends},
 Description: Extra widgets for easier configuration support.
  KConfigWidgets provides easy-to-use classes to create
  configuration dialogs, as well as a set of widgets which
@@ -44,16 +45,16 @@ Description: Extra widgets for easier configuration support.
 Package: libkf5configwidgets-dev
 Section: libdevel
 Architecture: any
-Depends: libkf5auth-dev (>= 5.90.0~),
-         libkf5codecs-dev (>= 5.90.0~),
-         libkf5config-dev (>= 5.90.0~),
+Depends: libkf5auth-dev (>= 5.103.0~),
+         libkf5codecs-dev (>= 5.103.0~),
+         libkf5config-dev (>= 5.103.0~),
          libkf5configwidgets5 (= ${binary:Version}),
-         libkf5guiaddons-dev (>= 5.90.0~),
-         libkf5i18n-dev (>= 5.90.0~),
-         libkf5widgetsaddons-dev (>= 5.90.0~),
+         libkf5guiaddons-dev (>= 5.103.0~),
+         libkf5i18n-dev (>= 5.103.0~),
+         libkf5widgetsaddons-dev (>= 5.103.0~),
          ${misc:Depends},
          ${shlibs:Depends},
-Recommends: libkf5configwidgets-doc (= ${source:Version})
+Recommends: libkf5configwidgets-doc (= ${source:Version}),
 Description: development files for kconfigwidgets
  KConfigWidgets provides easy-to-use classes to create
  configuration dialogs, as well as a set of widgets which
@@ -72,7 +73,7 @@ Package: libkf5configwidgets-doc
 Section: doc
 Architecture: all
 Multi-Arch: foreign
-Depends: ${misc:Depends}
+Depends: ${misc:Depends},
 Description: Extra widgets for easier configuration support (documentation)
  KConfigWidgets provides easy-to-use classes to create
  configuration dialogs, as well as a set of widgets which

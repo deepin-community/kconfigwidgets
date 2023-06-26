@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kconfigwidgets5\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
-"POT-Creation-Date: 2021-12-26 00:40+0000\n"
+"POT-Creation-Date: 2022-12-08 00:42+0000\n"
 "PO-Revision-Date: 2015-11-04 15:11+0000\n"
 "Last-Translator: Michael Bauer <fios@akerbeltz.org>\n"
 "Language-Team: Fòram na Gàidhlig\n"
@@ -29,31 +29,31 @@ msgctxt "EMAIL OF TRANSLATORS"
 msgid "Your emails"
 msgstr "fios@foramnagaidhlig.net"
 
-#: kcmodule.cpp:189
+#: kcmodule.cpp:198
 #, kde-format
 msgid "You will be asked to authenticate before saving"
 msgstr ""
 "Thèid iarraidh ort gun dèan thu dearbhadh gur tusa a th' ann mus sàbhail thu "
 "rud"
 
-#: kcmodule.cpp:193
+#: kcmodule.cpp:202
 #, kde-format
 msgid "You are not allowed to save the configuration"
 msgstr "Chan fhaod thu an rèiteachadh a shàbhaladh"
 
-#: kcodecaction.cpp:66
+#: kcodecaction.cpp:67
 #, kde-format
 msgctxt "Encodings menu"
 msgid "Default"
 msgstr "Tùsail"
 
-#: kcodecaction.cpp:74
+#: kcodecaction.cpp:75
 #, kde-format
 msgctxt "Encodings menu"
 msgid "Autodetect"
 msgstr "Mothaich gu fèin-obrachail"
 
-#: kcolorschememanager.cpp:200 kcolorschememanager.cpp:205
+#: kcolorschememanager.cpp:220 kcolorschememanager.cpp:229
 #, kde-format
 msgid "Color Scheme"
 msgstr ""
@@ -65,7 +65,7 @@ msgstr ""
 msgid "Default"
 msgstr "Tùsail"
 
-#: kcommandbar.cpp:584
+#: kcommandbar.cpp:560
 #, kde-format
 msgid "No commands matching the filter"
 msgstr ""
@@ -76,75 +76,74 @@ msgctxt "@title:window"
 msgid "Configure"
 msgstr "Rèitich"
 
-#: khamburgermenu.cpp:126
+#: khamburgermenu.cpp:125
 #, kde-format
 msgctxt "@action:inmenu General purpose menu"
 msgid "&Menu"
 msgstr ""
 
-#: khamburgermenu.cpp:342
+#: khamburgermenu.cpp:326
+#, fuzzy, kde-format
+#| msgid "Show &Menubar"
+msgctxt "@action:inmenu A menu item that advertises and enables the menubar"
+msgid "Show &Menubar with All Actions"
+msgstr "Seall &bàr clàr-taice"
+
+#: khamburgermenu.cpp:352
 #, kde-format
 msgctxt "@action:inmenu A menu text advertising its contents (more features)."
-msgid "For %1 more action:"
-msgid_plural "For %1 more actions:"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgid "More"
+msgstr ""
 
-#: khamburgermenu.cpp:345
+#: khamburgermenu.cpp:353
 #, kde-format
 msgctxt ""
 "@action:inmenu A section heading advertising the contents of the menu bar"
-msgid "%1 Menu Bar Exclusive Action"
-msgid_plural "%1 Menu Bar Exclusive Actions"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgid "More Actions"
+msgstr ""
 
-#: krecentfilesaction.cpp:68
+#: krecentfilesaction.cpp:71
 #, kde-format
 msgid "No Entries"
 msgstr "Chan eil innteart ann"
 
-#: krecentfilesaction.cpp:74
+#: krecentfilesaction.cpp:77
 #, kde-format
 msgid "Clear List"
 msgstr "Falamhaich an liosta"
 
-#: kstandardaction.cpp:140
+#: kstandardaction.cpp:157
 #, kde-format
 msgctxt "go back"
 msgid "&Back"
 msgstr "&Air ais"
 
-#: kstandardaction.cpp:147
+#: kstandardaction.cpp:164
 #, kde-format
 msgctxt "go forward"
 msgid "&Forward"
 msgstr "Air a&dhart"
 
-#: kstandardaction.cpp:154
+#: kstandardaction.cpp:171
 #, kde-format
 msgctxt "home page"
 msgid "&Home"
 msgstr "Dha&chaigh"
 
-#: kstandardaction.cpp:158
+#: kstandardaction.cpp:175
 #, kde-format
 msgctxt "show help"
 msgid "&Help"
 msgstr "Cob&hair"
 
-#: kstandardaction.cpp:215
+#: kstandardaction.cpp:232
 #, kde-format
 msgid "Show Menubar<p>Shows the menubar again after it has been hidden</p>"
 msgstr ""
 "Seall bàr clàr-taice<p>Seallaidh seo am bàr clàr-taice a-rithist ma chaidh "
 "fhalach</p>"
 
-#: kstandardaction.cpp:236
+#: kstandardaction.cpp:253
 #, kde-format
 msgid ""
 "Show Statusbar<p>Shows the statusbar, which is the bar at the bottom of the "
@@ -311,7 +310,9 @@ msgid "&Replace..."
 msgstr "Cui&r 'na àite..."
 
 #: kstandardaction_p.h:58
-msgid "&Actual Size"
+#, fuzzy
+#| msgid "&Actual Size"
+msgid "Zoom to &Actual Size"
 msgstr "&An dearbh mheud"
 
 #: kstandardaction_p.h:58
@@ -559,32 +560,41 @@ msgstr ""
 msgid "Open &Menu"
 msgstr "Fosgail sgrìobhainn o chionn goi&rid"
 
-#: ktipdialog.cpp:219
+#: ktipdialog.cpp:222
 #, kde-format
 msgctxt "@title:window"
 msgid "Tip of the Day"
 msgstr "Gliocas an latha"
 
-#: ktipdialog.cpp:235
+#: ktipdialog.cpp:238
 #, kde-format
 msgctxt "@title"
 msgid "Did you know...?\n"
 msgstr "An robh fios agad...?\n"
 
-#: ktipdialog.cpp:288
+#: ktipdialog.cpp:291
 #, kde-format
 msgctxt "@option:check"
 msgid "&Show tips on startup"
 msgstr "&Seall na gliocasan aig an toiseach"
 
-#: ktipdialog.cpp:293
+#: ktipdialog.cpp:296
 #, kde-format
 msgctxt "@action:button Goes to previous tip"
 msgid "&Previous"
 msgstr "Ai&r ais"
 
-#: ktipdialog.cpp:298
+#: ktipdialog.cpp:301
 #, kde-format
 msgctxt "@action:button Goes to next tip, opposite to previous"
 msgid "&Next"
 msgstr "Air &adhart"
+
+#~ msgid "Switch Application &Language..."
+#~ msgstr "Atharraich &cànan na h-aplacaid..."
+
+#~ msgid "&Redisplay"
+#~ msgstr "Seall às ù&r"
+
+#~ msgid "without name"
+#~ msgstr "gun ainm"

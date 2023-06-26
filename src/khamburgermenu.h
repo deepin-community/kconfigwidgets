@@ -86,8 +86,8 @@ class QMenuBar;
  *    actions which can be found in the QMenuBar. There will also be the
  *    showMenuBarAction if you set it with setShowMenuBarAction().
  * 3. Do not worry about the help menu. KHamburgerMenu will automatically contain
- *    a help menu as the last item (if you set a QMenuBar which is expected to
- *    have the help menu as the last action).
+ *    a help menu as the second to last item (if you set a QMenuBar which is
+ *    expected to have the help menu as the last action).
  *
  * @since 5.81
  */
@@ -148,6 +148,22 @@ public:
      * @param menu The menu this KHamburgerMenu is supposed to appear in.
      */
     void addToMenu(QMenu *menu);
+
+    /**
+     * Inserts this KHamburgerMenu to @p menu's list of actions, before the action @p before.
+     * It will only be visible in the menu if both the menu bar and all of this
+     * QWidgetAction's createdWidgets() are invisible.
+     * If it is visible in the menu, then opening the menu emits the aboutToShowMenu
+     * signal.
+     *
+     * @param before The action before which KHamburgerMenu should be inserted.
+     * @param menu The menu this KHamburgerMenu is supposed to appear in.
+     *
+     * @see QWidget::insertAction(), QMenu::insertMenu()
+     *
+     * @since 5.99
+     */
+    void insertIntoMenuBefore(QMenu *menu, QAction *before);
 
     /**
      * Adds @p widget to a list of widgets that should be monitored for their actions().

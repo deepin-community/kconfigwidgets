@@ -251,7 +251,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
                             userproperty = getUserProperty(childWidget);
                         }
                         if (!userproperty.isEmpty()) {
-                            const int indexOfProperty = metaObject->indexOfProperty(userproperty);
+                            const int indexOfProperty = metaObject->indexOfProperty(userproperty.constData());
                             if (indexOfProperty != -1) {
                                 const QMetaProperty property = metaObject->property(indexOfProperty);
                                 const QMetaMethod notifySignal = property.notifySignal();
@@ -265,7 +265,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
                                 << "Don't know how to monitor widget '" << childWidget->metaObject()->className() << "' for changes!";
                         }
                     } else {
-                        connect(childWidget, propertyChangeSignal, this, SLOT(onWidgetModified()));
+                        connect(childWidget, propertyChangeSignal.constData(), this, SLOT(onWidgetModified()));
                         changeSignalFound = true;
                     }
 
@@ -404,22 +404,26 @@ void KConfigDialogManager::updateSettings()
 
 QByteArray KConfigDialogManager::getUserProperty(const QWidget *widget) const
 {
-    if (!s_propertyMap()->contains(widget->metaObject()->className())) {
-        const QMetaObject *metaObject = widget->metaObject();
-        const QMetaProperty user = metaObject->userProperty();
-        if (user.isValid()) {
-            s_propertyMap()->insert(widget->metaObject()->className(), user.name());
-            // qCDebug(KCONFIG_WIDGETS_LOG) << "class name: '" << widget->metaObject()->className()
+    MyHash *map = s_propertyMap();
+    const QMetaObject *metaObject = widget->metaObject();
+    const QString className(QLatin1String(metaObject->className()));
+    auto it = map->find(className);
+    if (it == map->end()) {
+        const QMetaProperty userProp = metaObject->userProperty();
+        if (userProp.isValid()) {
+            it = map->insert(className, userProp.name());
+            // qCDebug(KCONFIG_WIDGETS_LOG) << "class name: '" << className
             //<< " 's USER property: " << metaProperty.name() << endl;
         } else {
             return QByteArray(); // no USER property
         }
     }
+
     const QComboBox *cb = qobject_cast<const QComboBox *>(widget);
     if (cb) {
         const char *qcomboUserPropertyName = cb->QComboBox::metaObject()->userProperty().name();
         const int qcomboUserPropertyIndex = qcomboUserPropertyName ? cb->QComboBox::metaObject()->indexOfProperty(qcomboUserPropertyName) : -1;
-        const char *widgetUserPropertyName = widget->metaObject()->userProperty().name();
+        const char *widgetUserPropertyName = metaObject->userProperty().name();
         const int widgetUserPropertyIndex = widgetUserPropertyName ? cb->metaObject()->indexOfProperty(widgetUserPropertyName) : -1;
 
         // no custom user property set on subclass of QComboBox?
@@ -428,7 +432,7 @@ QByteArray KConfigDialogManager::getUserProperty(const QWidget *widget) const
         }
     }
 
-    return s_propertyMap()->value(widget->metaObject()->className());
+    return it != map->end() ? it.value() : QByteArray{};
 }
 
 QByteArray KConfigDialogManager::getCustomProperty(const QWidget *widget) const
@@ -446,7 +450,8 @@ QByteArray KConfigDialogManager::getCustomProperty(const QWidget *widget) const
 
 QByteArray KConfigDialogManager::getUserPropertyChangedSignal(const QWidget *widget) const
 {
-    QHash<QString, QByteArray>::const_iterator changedIt = s_changedMap()->constFind(widget->metaObject()->className());
+    const QString className = QLatin1String(widget->metaObject()->className());
+    auto changedIt = s_changedMap()->constFind(className);
 
     if (changedIt == s_changedMap()->constEnd()) {
         // If the class name of the widget wasn't in the monitored widgets map, then look for
@@ -454,7 +459,8 @@ QByteArray KConfigDialogManager::getUserPropertyChangedSignal(const QWidget *wid
         // widgets with KConfigXT where 'Qt::Widget' wasn't being seen a the real deal, even
         // though it was a 'QWidget'.
         if (widget->metaObject()->superClass()) {
-            changedIt = s_changedMap()->constFind(widget->metaObject()->superClass()->className());
+            const QString parentClassName = QLatin1String(widget->metaObject()->superClass()->className());
+            changedIt = s_changedMap()->constFind(parentClassName);
         }
     }
 
@@ -509,7 +515,7 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
         return;
     }
 
-    w->setProperty(userproperty, v);
+    w->setProperty(userproperty.constData(), v);
 }
 
 QVariant KConfigDialogManager::property(QWidget *w) const
@@ -543,7 +549,7 @@ QVariant KConfigDialogManager::property(QWidget *w) const
         return QVariant();
     }
 
-    return w->property(userproperty);
+    return w->property(userproperty.constData());
 }
 
 bool KConfigDialogManager::hasChanged() const
@@ -609,16 +615,20 @@ void KConfigDialogManagerPrivate::onWidgetModified()
     const auto widget = qobject_cast<QWidget *>(q->sender());
     Q_ASSERT(widget);
 
-    if (!widget->objectName().startsWith("kcfg_")) {
-        Q_ASSERT(widget->parent()->objectName().startsWith("kcfg_"));
-        const auto configId = widget->parent()->objectName().mid(5);
-        const auto parent = qobject_cast<QWidget *>(widget->parent());
-        Q_ASSERT(parent);
-        updateWidgetIndicator(configId, parent);
-    } else {
-        const auto configId = widget->objectName().mid(5);
+    const QLatin1String prefix("kcfg_");
+    QString configId = widget->objectName();
+    if (configId.startsWith(prefix)) {
+        configId.remove(0, prefix.size());
         updateWidgetIndicator(configId, widget);
+    } else {
+        auto *parent = qobject_cast<QWidget *>(widget->parent());
+        Q_ASSERT(parent);
+        configId = parent->objectName();
+        Q_ASSERT(configId.startsWith(prefix));
+        configId.remove(0, prefix.size());
+        updateWidgetIndicator(configId, parent);
     }
+
     Q_EMIT q->widgetModified();
 }
 

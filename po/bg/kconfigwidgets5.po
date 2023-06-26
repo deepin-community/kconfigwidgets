@@ -3,19 +3,20 @@
 #
 # Zlatko Popov <zlatkopopov@fsa-bg.org>, 2006, 2007, 2008, 2009.
 # Yasen Pramatarov <yasen@lindeas.com>, 2009, 2010, 2011, 2012, 2013.
+# Mincho Kondarev <mkondarev@yahoo.de>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: kdelibs4\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
-"POT-Creation-Date: 2021-12-26 00:40+0000\n"
-"PO-Revision-Date: 2013-07-23 01:52+0300\n"
-"Last-Translator: Yasen Pramatarov <yasen@lindeas.com>\n"
-"Language-Team: Bulgarian <dict@ludost.net>\n"
+"POT-Creation-Date: 2022-12-08 00:42+0000\n"
+"PO-Revision-Date: 2022-06-19 14:35+0200\n"
+"Last-Translator: Mincho Kondarev <mkondarev@yahoo.de>\n"
+"Language-Team: Bulgarian <kde-i18n-doc@kde.org>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Lokalize 22.04.2\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
 #, kde-format
@@ -28,127 +29,122 @@ msgctxt "EMAIL OF TRANSLATORS"
 msgid "Your emails"
 msgstr "yasen@lindeas.com,radnev@yahoo.com,zlatkopopov@fsa-bg.org"
 
-#: kcmodule.cpp:189
+#: kcmodule.cpp:198
 #, kde-format
 msgid "You will be asked to authenticate before saving"
-msgstr ""
+msgstr "Ще бъдете запитани за удостоверяване преди запазване"
 
-#: kcmodule.cpp:193
+#: kcmodule.cpp:202
 #, kde-format
 msgid "You are not allowed to save the configuration"
 msgstr "Нямате право да записвате конфигурация"
 
-#: kcodecaction.cpp:66
+#: kcodecaction.cpp:67
 #, kde-format
 msgctxt "Encodings menu"
 msgid "Default"
 msgstr "Стандартни"
 
-#: kcodecaction.cpp:74
+#: kcodecaction.cpp:75
 #, kde-format
 msgctxt "Encodings menu"
 msgid "Autodetect"
 msgstr "Автоматично откриване"
 
-#: kcolorschememanager.cpp:200 kcolorschememanager.cpp:205
-#, fuzzy, kde-format
-#| msgid "Shortcut Schemes"
+#: kcolorschememanager.cpp:220 kcolorschememanager.cpp:229
+#, kde-format
 msgid "Color Scheme"
-msgstr "Схеми на бързи клавиши"
+msgstr "Цветова схема"
 
 #: kcolorschememodel.cpp:71
-#, fuzzy, kde-format
-#| msgctxt "Encodings menu"
-#| msgid "Default"
+#, kde-format
 msgid "Default"
-msgstr "Стандартни"
+msgstr "По подразбиране"
 
-#: kcommandbar.cpp:584
+#: kcommandbar.cpp:560
 #, kde-format
 msgid "No commands matching the filter"
-msgstr ""
+msgstr "Няма команди, съответстващи на филтъра"
 
 #: kconfigdialog.cpp:37
-#, fuzzy, kde-format
-#| msgid "Configure"
+#, kde-format
 msgctxt "@title:window"
 msgid "Configure"
-msgstr "Настройки"
+msgstr "Конфигуриране"
 
-#: khamburgermenu.cpp:126
-#, fuzzy, kde-format
-#| msgctxt "keyboard-key-name"
-#| msgid "Menu"
+#: khamburgermenu.cpp:125
+#, kde-format
 msgctxt "@action:inmenu General purpose menu"
 msgid "&Menu"
-msgstr "Menu"
+msgstr "&Меню"
 
-#: khamburgermenu.cpp:342
-#, fuzzy, kde-format
-#| msgid "Shortcut '%1' for action '%2'\n"
+#: khamburgermenu.cpp:326
+#, kde-format
+msgctxt "@action:inmenu A menu item that advertises and enables the menubar"
+msgid "Show &Menubar with All Actions"
+msgstr "Показване на мен&ю лентата с всички действия"
+
+#: khamburgermenu.cpp:352
+#, kde-format
 msgctxt "@action:inmenu A menu text advertising its contents (more features)."
-msgid "For %1 more action:"
-msgid_plural "For %1 more actions:"
-msgstr[0] "Бърз клавиши \"%1\" за действие \"%2\"\n"
-msgstr[1] "Бърз клавиши \"%1\" за действие \"%2\"\n"
+msgid "More"
+msgstr "Допълнителни"
 
-#: khamburgermenu.cpp:345
+#: khamburgermenu.cpp:353
 #, kde-format
 msgctxt ""
 "@action:inmenu A section heading advertising the contents of the menu bar"
-msgid "%1 Menu Bar Exclusive Action"
-msgid_plural "%1 Menu Bar Exclusive Actions"
-msgstr[0] ""
-msgstr[1] ""
+msgid "More Actions"
+msgstr "Допълнителни действия"
 
-#: krecentfilesaction.cpp:68
+#: krecentfilesaction.cpp:71
 #, kde-format
 msgid "No Entries"
 msgstr "Няма записи"
 
-#: krecentfilesaction.cpp:74
+#: krecentfilesaction.cpp:77
 #, kde-format
 msgid "Clear List"
 msgstr "Изчистване на списъка"
 
-#: kstandardaction.cpp:140
+#: kstandardaction.cpp:157
 #, kde-format
 msgctxt "go back"
 msgid "&Back"
 msgstr "Наза&д"
 
-#: kstandardaction.cpp:147
+#: kstandardaction.cpp:164
 #, kde-format
 msgctxt "go forward"
 msgid "&Forward"
 msgstr "&Напред"
 
-#: kstandardaction.cpp:154
+#: kstandardaction.cpp:171
 #, kde-format
 msgctxt "home page"
 msgid "&Home"
 msgstr "&Домашна страница"
 
-#: kstandardaction.cpp:158
+#: kstandardaction.cpp:175
 #, kde-format
 msgctxt "show help"
 msgid "&Help"
 msgstr "Помо&щ"
 
-#: kstandardaction.cpp:215
+#: kstandardaction.cpp:232
 #, kde-format
 msgid "Show Menubar<p>Shows the menubar again after it has been hidden</p>"
 msgstr "Показване на главното меню"
 
-#: kstandardaction.cpp:236
-#, fuzzy, kde-format
-#| msgid ""
-#| "Show Statusbar<br /><br />Shows the statusbar, which is the bar at the "
-#| "bottom of the window used for status information."
+#: kstandardaction.cpp:253
+#, kde-format
 msgid ""
 "Show Statusbar<p>Shows the statusbar, which is the bar at the bottom of the "
 "window used for status information.</p>"
-msgstr "Показване на лентата за състоянието."
+msgstr ""
+"Показване на лентата на състоянието <p>Показва лентата на състоянието, която "
+"е лентата в долната част на прозорец, използвана за информация за "
+"състоянието.</p>"
 
 #: kstandardaction_p.h:30
 msgid "&New"
@@ -307,22 +303,20 @@ msgid "&Replace..."
 msgstr "&Замяна..."
 
 #: kstandardaction_p.h:58
-msgid "&Actual Size"
-msgstr "&Оригинален размер"
+msgid "Zoom to &Actual Size"
+msgstr "Мащабиране до &действителен размер"
 
 #: kstandardaction_p.h:58
 msgid "View document at its actual size"
-msgstr ""
+msgstr "Преглед на документа в действителния му размер"
 
 #: kstandardaction_p.h:59
 msgid "&Fit to Page"
 msgstr "Мащабиране до &размера на страницата"
 
 #: kstandardaction_p.h:59
-#, fuzzy
-#| msgid "Go to first page"
 msgid "Zoom to fit page in window"
-msgstr "Отиване на първата страница"
+msgstr "Увеличаване до побиране на цялата страница в прозореца"
 
 #: kstandardaction_p.h:60
 msgid "Fit to Page &Width"
@@ -330,7 +324,7 @@ msgstr "Мащабиране до &широчината на страницат�
 
 #: kstandardaction_p.h:60
 msgid "Zoom to fit page width in window"
-msgstr ""
+msgstr "Увеличаване до побиране на ширината на страницата в прозореца"
 
 #: kstandardaction_p.h:61
 msgid "Fit to Page &Height"
@@ -338,7 +332,7 @@ msgstr "Мащабиране до &височината на страницат�
 
 #: kstandardaction_p.h:61
 msgid "Zoom to fit page height in window"
-msgstr ""
+msgstr "Увеличаване до побиране на височината на страницата в прозореца"
 
 #: kstandardaction_p.h:62
 msgid "Zoom &In"
@@ -353,20 +347,16 @@ msgid "&Zoom..."
 msgstr "Ма&щаб..."
 
 #: kstandardaction_p.h:64
-#, fuzzy
-#| msgid "Select a week"
 msgid "Select zoom level"
-msgstr "Избор на седмица"
+msgstr "Избиране на ниво на мащабиране"
 
 #: kstandardaction_p.h:65
 msgid "&Refresh"
-msgstr ""
+msgstr "&Обновяване"
 
 #: kstandardaction_p.h:65
-#, fuzzy
-#| msgid "&Redisplay"
 msgid "Refresh document"
-msgstr "Обнов&яване"
+msgstr "Обновяване на документа"
 
 #: kstandardaction_p.h:67
 msgid "&Up"
@@ -374,7 +364,7 @@ msgstr "На&горе"
 
 #: kstandardaction_p.h:67
 msgid "Go up"
-msgstr ""
+msgstr "Отиване нагоре"
 
 #: kstandardaction_p.h:72
 msgid "&Previous Page"
@@ -485,10 +475,8 @@ msgid "&Save Settings"
 msgstr "&Запис на настройките"
 
 #: kstandardaction_p.h:94
-#, fuzzy
-#| msgid "Configure S&hortcuts..."
 msgid "Configure Keyboard S&hortcuts..."
-msgstr "Настройване на &бързите клавиши..."
+msgstr "Конфигуриране на к&лавишни комбинации..."
 
 #: kstandardaction_p.h:95
 #, kde-format
@@ -521,10 +509,8 @@ msgid "&Report Bug..."
 msgstr "Съобщаване за &грешка..."
 
 #: kstandardaction_p.h:108
-#, fuzzy
-#| msgid "Configure Email..."
 msgid "Configure &Language..."
-msgstr "Настройване на е-пощата..."
+msgstr "Конфигуриране на &език..."
 
 #: kstandardaction_p.h:109
 #, kde-format
@@ -536,62 +522,51 @@ msgid "About &KDE"
 msgstr "Относно &KDE"
 
 #: kstandardaction_p.h:111
-#, fuzzy
-#| msgid "Delete"
 msgid "&Delete"
-msgstr "Изтриване"
+msgstr "&Изтриване"
 
 #: kstandardaction_p.h:112
-#, fuzzy
-#| msgid "&Replace..."
 msgid "&Rename..."
-msgstr "&Замяна..."
+msgstr "&Преименуване..."
 
 #: kstandardaction_p.h:113
 msgid "&Move to Trash"
-msgstr ""
+msgstr "&Преместване в кошчето"
 
 #: kstandardaction_p.h:114
 msgid "&Donate"
-msgstr ""
+msgstr "&Дарение"
 
 #: kstandardaction_p.h:115
-#, fuzzy
-#| msgid "Open &Recent"
 msgid "Open &Menu"
-msgstr "Последно изпо&лзвани"
+msgstr "Отваряне на &меню"
 
-#: ktipdialog.cpp:219
-#, fuzzy, kde-format
-#| msgid "Tip of the Day"
+#: ktipdialog.cpp:222
+#, kde-format
 msgctxt "@title:window"
 msgid "Tip of the Day"
-msgstr "Съвет за деня"
+msgstr "Съвет на деня"
 
-#: ktipdialog.cpp:235
-#, fuzzy, kde-format
-#| msgid "Did you know...?\n"
+#: ktipdialog.cpp:238
+#, kde-format
 msgctxt "@title"
 msgid "Did you know...?\n"
-msgstr "Знаете ли, че...?\n"
+msgstr "Знаете ли...?\n"
 
-#: ktipdialog.cpp:288
-#, fuzzy, kde-format
-#| msgid "&Show tips on startup"
+#: ktipdialog.cpp:291
+#, kde-format
 msgctxt "@option:check"
 msgid "&Show tips on startup"
-msgstr "&Показване при стартиране"
+msgstr "&Показване на съвети при стартиране"
 
-#: ktipdialog.cpp:293
-#, fuzzy, kde-format
-#| msgid "&Previous"
+#: ktipdialog.cpp:296
+#, kde-format
 msgctxt "@action:button Goes to previous tip"
 msgid "&Previous"
-msgstr "Преди&шен"
+msgstr "&Предишен"
 
-#: ktipdialog.cpp:298
-#, fuzzy, kde-format
-#| msgid "&Next"
+#: ktipdialog.cpp:301
+#, kde-format
 msgctxt "@action:button Goes to next tip, opposite to previous"
 msgid "&Next"
-msgstr "Следва&щ"
+msgstr "&Следващ"

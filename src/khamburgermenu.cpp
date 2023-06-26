@@ -23,23 +23,14 @@
 #include <unordered_set>
 
 KHamburgerMenu::KHamburgerMenu(QObject *parent)
-    : QWidgetAction{parent},
-      d_ptr{new KHamburgerMenuPrivate(this)}
+    : QWidgetAction{parent}
+    , d_ptr{new KHamburgerMenuPrivate(this)}
 {
 }
 
 KHamburgerMenuPrivate::KHamburgerMenuPrivate(KHamburgerMenu *qq)
     : q_ptr{qq}
-    , m_actualMenu{nullptr}
-    , m_advertiseMenuBar{true}
-    , m_menuBarAdvertisementMenu{nullptr}
-    , m_exclusiveActionsCount{0}
-    , m_lastUsedMenu{nullptr}
     , m_listeners{new ListenerContainer(this)}
-    , m_menuAction{nullptr}
-    , m_menuBar{nullptr}
-    , m_menuResetNeeded{false}
-    , m_showMenuBarAction{nullptr}
 {
     q_ptr->setPriority(QAction::LowPriority);
     connect(q_ptr, &QAction::changed, this, &KHamburgerMenuPrivate::slotActionChanged);
@@ -59,11 +50,13 @@ void KHamburgerMenuPrivate::setMenuBar(QMenuBar *menuBar)
 {
     if (m_menuBar) {
         m_menuBar->removeEventFilter(m_listeners->get<VisibilityChangesListener>());
+        m_menuBar->removeEventFilter(m_listeners->get<AddOrRemoveActionListener>());
     }
     m_menuBar = menuBar;
     updateVisibility();
     if (m_menuBar) {
         m_menuBar->installEventFilter(m_listeners->get<VisibilityChangesListener>());
+        m_menuBar->installEventFilter(m_listeners->get<AddOrRemoveActionListener>());
     }
 }
 
@@ -73,7 +66,7 @@ QMenuBar *KHamburgerMenu::menuBar() const
     return d->menuBar();
 }
 
-QMenuBar * KHamburgerMenuPrivate::menuBar() const
+QMenuBar *KHamburgerMenuPrivate::menuBar() const
 {
     return m_menuBar;
 }
@@ -106,18 +99,24 @@ void KHamburgerMenu::setShowMenuBarAction(QAction *showMenuBarAction)
     d->setShowMenuBarAction(showMenuBarAction);
 }
 
-void KHamburgerMenuPrivate::setShowMenuBarAction(QAction* showMenuBarAction)
+void KHamburgerMenuPrivate::setShowMenuBarAction(QAction *showMenuBarAction)
 {
     m_showMenuBarAction = showMenuBarAction;
 }
 
-void KHamburgerMenu::addToMenu(QMenu* menu)
+void KHamburgerMenu::addToMenu(QMenu *menu)
 {
     Q_D(KHamburgerMenu);
-    d->addToMenu(menu);
+    d->insertIntoMenuBefore(menu, nullptr);
 }
 
-void KHamburgerMenuPrivate::addToMenu(QMenu *menu)
+void KHamburgerMenu::insertIntoMenuBefore(QMenu *menu, QAction *before)
+{
+    Q_D(KHamburgerMenu);
+    d->insertIntoMenuBefore(menu, before);
+}
+
+void KHamburgerMenuPrivate::insertIntoMenuBefore(QMenu *menu, QAction *before)
 {
     Q_CHECK_PTR(menu);
     Q_Q(KHamburgerMenu);
@@ -129,15 +128,14 @@ void KHamburgerMenuPrivate::addToMenu(QMenu *menu)
     }
     updateVisibility(); // Sets the appropriate visibility of m_menuAction.
 
-    menu->addAction(m_menuAction);
-    connect(menu, &QMenu::aboutToShow, this, [this, menu, q]()
-        {
-            if (m_menuAction->isVisible()) {
-                Q_EMIT q->aboutToShowMenu();
-                hideActionsOf(menu);
-                resetMenu();
-            }
-        });
+    menu->insertAction(before, m_menuAction);
+    connect(menu, &QMenu::aboutToShow, this, [this, menu, q]() {
+        if (m_menuAction->isVisible()) {
+            Q_EMIT q->aboutToShowMenu();
+            hideActionsOf(menu);
+            resetMenu();
+        }
+    });
 }
 
 void KHamburgerMenu::hideActionsOf(QWidget *widget)
@@ -193,7 +191,8 @@ QWidget *KHamburgerMenu::createWidget(QWidget *parent)
 QWidget *KHamburgerMenuPrivate::createWidget(QWidget *parent)
 {
     if (qobject_cast<QMenu *>(parent)) {
-        qDebug("Adding a KHamburgerMenu directly to a QMenu. "
+        qDebug(
+            "Adding a KHamburgerMenu directly to a QMenu. "
             "This will look odd. Use addToMenu() instead.");
     }
     Q_Q(KHamburgerMenu);
@@ -206,8 +205,7 @@ QWidget *KHamburgerMenuPrivate::createWidget(QWidget *parent)
     toolButton->setPopupMode(QToolButton::InstantPopup);
     updateButtonStyle(toolButton);
     if (const QToolBar *toolbar = qobject_cast<QToolBar *>(parent)) {
-        connect(toolbar, &QToolBar::toolButtonStyleChanged,
-                toolButton, &QToolButton::setToolButtonStyle);
+        connect(toolbar, &QToolBar::toolButtonStyleChanged, toolButton, &QToolButton::setToolButtonStyle);
     }
 
     // Make sure the menu will be ready in time
@@ -217,27 +215,20 @@ QWidget *KHamburgerMenuPrivate::createWidget(QWidget *parent)
     return toolButton;
 }
 
-QAction *KHamburgerMenuPrivate::actionWithExclusivesFrom(QAction *from,
-                                                         QWidget *parent,
-                             std::unordered_set<const QAction *> &nonExclusives) const
+QAction *KHamburgerMenuPrivate::actionWithExclusivesFrom(QAction *from, QWidget *parent, std::unordered_set<const QAction *> &nonExclusives) const
 {
     Q_CHECK_PTR(from);
     if (nonExclusives.count(from) > 0) {
         return nullptr; // The action is non-exclusive/already visible elsewhere.
     }
     if (!from->menu() || from->menu()->isEmpty()) {
-        if (!from->isSeparator()) {
-            m_exclusiveActionsCount++;
-        }
-        return from;    // The action is exclusive and doesn't have a menu.
+        return from; // The action is exclusive and doesn't have a menu.
     }
     std::unique_ptr<QAction> menuActionWithExclusives(new QAction(from->icon(), from->text(), parent));
-    std::unique_ptr<QMenu>   menuWithExclusives(new QMenu(parent));
+    std::unique_ptr<QMenu> menuWithExclusives(new QMenu(parent));
     const auto fromMenuActions = from->menu()->actions();
     for (QAction *action : fromMenuActions) {
-        QAction *actionWithExclusives = actionWithExclusivesFrom(action,
-                                                                 menuWithExclusives.get(),
-                                                                 nonExclusives);
+        QAction *actionWithExclusives = actionWithExclusivesFrom(action, menuWithExclusives.get(), nonExclusives);
         if (actionWithExclusives) {
             menuWithExclusives->addAction(actionWithExclusives);
         }
@@ -305,44 +296,61 @@ std::unique_ptr<QMenu> KHamburgerMenuPrivate::newMenu()
     }
     // Add the last two menu actions
     if (m_menuBar) {
-        visibleActions.insert(m_menuBar->actions().last()); // Help menu will be added later.
+        connect(menu.get(), &QMenu::aboutToShow, this, [this]() {
+            if (m_menuBar->actions().last()->icon().isNull()) {
+                m_helpIconIsSet = false;
+                m_menuBar->actions().last()->setIcon(QIcon::fromTheme(QStringLiteral("help-contents"))); // set "Help" menu icon
+            } else {
+                m_helpIconIsSet = true; // if the "Help" icon was set by the application, we want to leave it untouched
+            }
+        });
+        connect(menu.get(), &QMenu::aboutToHide, this, [this]() {
+            if (m_menuBar->actions().last()->icon().name() == QStringLiteral("help-contents") && !m_helpIconIsSet) {
+                m_menuBar->actions().last()->setIcon(QIcon());
+            }
+        });
+        menu->addAction(m_menuBar->actions().last()); // add "Help" menu
+        visibleActions.insert(m_menuBar->actions().last());
         if (m_advertiseMenuBar) {
             menu->addSeparator();
             m_menuBarAdvertisementMenu = newMenuBarAdvertisementMenu(visibleActions);
             menu->addAction(m_menuBarAdvertisementMenu->menuAction());
         }
-        menu->addSeparator();
-        menu->addAction(m_menuBar->actions().last()); // add "Help" menu
     }
     return menu;
 }
 
-std::unique_ptr<QMenu> KHamburgerMenuPrivate::newMenuBarAdvertisementMenu(
-                                        std::unordered_set<const QAction *> &visibleActions) const
+std::unique_ptr<QMenu> KHamburgerMenuPrivate::newMenuBarAdvertisementMenu(std::unordered_set<const QAction *> &visibleActions)
 {
     std::unique_ptr<QMenu> advertiseMenuBarMenu(new QMenu());
+    m_showMenuBarWithAllActionsText = i18nc("@action:inmenu A menu item that advertises and enables the menubar", "Show &Menubar with All Actions");
+    connect(advertiseMenuBarMenu.get(), &QMenu::aboutToShow, this, [this]() {
+        if (m_showMenuBarAction) {
+            m_showMenuBarText = m_showMenuBarAction->text();
+            m_showMenuBarAction->setText(m_showMenuBarWithAllActionsText);
+        }
+    });
+    connect(advertiseMenuBarMenu.get(), &QMenu::aboutToHide, this, [this]() {
+        if (m_showMenuBarAction && m_showMenuBarAction->text() == m_showMenuBarWithAllActionsText) {
+            m_showMenuBarAction->setText(m_showMenuBarText);
+        }
+    });
     if (m_showMenuBarAction) {
         advertiseMenuBarMenu->addAction(m_showMenuBarAction);
         visibleActions.insert(m_showMenuBarAction);
     }
     QAction *section = advertiseMenuBarMenu->addSeparator();
 
-    m_exclusiveActionsCount = 0;
     const auto menuBarActions = m_menuBar->actions();
     for (QAction *menuAction : menuBarActions) {
-        QAction *menuActionWithExclusives = actionWithExclusivesFrom(menuAction,
-                                                                     advertiseMenuBarMenu.get(),
-                                                                     visibleActions);
+        QAction *menuActionWithExclusives = actionWithExclusivesFrom(menuAction, advertiseMenuBarMenu.get(), visibleActions);
         if (menuActionWithExclusives) {
             advertiseMenuBarMenu->addAction(menuActionWithExclusives);
         }
     }
-    advertiseMenuBarMenu->setTitle(i18ncp(
-        "@action:inmenu A menu text advertising its contents (more features).",
-                                          "For %1 more action:", "For %1 more actions:", m_exclusiveActionsCount));
-    section->setText(i18ncp(
-        "@action:inmenu A section heading advertising the contents of the menu bar",
-        "%1 Menu Bar Exclusive Action", "%1 Menu Bar Exclusive Actions", m_exclusiveActionsCount));
+    advertiseMenuBarMenu->setIcon(QIcon::fromTheme(QStringLiteral("view-more-symbolic")));
+    advertiseMenuBarMenu->setTitle(i18nc("@action:inmenu A menu text advertising its contents (more features).", "More"));
+    section->setText(i18nc("@action:inmenu A section heading advertising the contents of the menu bar", "More Actions"));
     return advertiseMenuBarMenu;
 }
 
@@ -377,8 +385,8 @@ void KHamburgerMenuPrivate::updateVisibility()
     q->setVisible(!menuBarVisible);
 
     if (!m_menuAction) {
-        if (menuBarVisible) {
-            m_actualMenu.reset(); // might as well free up some memory
+        if (menuBarVisible && m_actualMenu) {
+            m_actualMenu.release()->deleteLater(); // might as well free up some memory
         }
         return;
     }
@@ -386,10 +394,8 @@ void KHamburgerMenuPrivate::updateVisibility()
     const auto createdWidgets = q->createdWidgets();
     // The m_menuAction acts as a fallback if both the m_menuBar and all createdWidgets() on the UI
     // are currently hidden. Only then should the m_menuAction ever be visible in a QMenu.
-    if (menuBarVisible
-        || (m_menuBar && m_menuBar->isNativeMenuBar()) // See [1] below.
-        || std::any_of(createdWidgets.cbegin(), createdWidgets.cend(), isWidgetActuallyVisible)
-    ) {
+    if (menuBarVisible || (m_menuBar && m_menuBar->isNativeMenuBar()) // See [1] below.
+        || std::any_of(createdWidgets.cbegin(), createdWidgets.cend(), isWidgetActuallyVisible)) {
         m_menuAction->setVisible(false);
         return;
     }
@@ -419,8 +425,7 @@ void KHamburgerMenuPrivate::updateButtonStyle(QToolButton *hamburgerMenuButton) 
         buttonStyle = toolbar->toolButtonStyle();
     }
     if (buttonStyle == Qt::ToolButtonFollowStyle) {
-        buttonStyle = static_cast<Qt::ToolButtonStyle>(
-                            hamburgerMenuButton->style()->styleHint(QStyle::SH_ToolButtonStyle));
+        buttonStyle = static_cast<Qt::ToolButtonStyle>(hamburgerMenuButton->style()->styleHint(QStyle::SH_ToolButtonStyle));
     }
     if (buttonStyle == Qt::ToolButtonTextBesideIcon && q->priority() < QAction::NormalPriority) {
         hamburgerMenuButton->setToolButtonStyle(Qt::ToolButtonIconOnly);

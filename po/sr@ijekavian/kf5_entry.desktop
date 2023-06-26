@@ -1,8 +1,9 @@
 [KCM Locale]
 Name=Serbian Ijekavian
 Name[ar]=الصّربيّة الجيكافيانيّة
-Name[ast]=Serbiu ijekavian
 Name[az]=Serb (İekav) dilində
+Name[be]=Сербская (екаўскі дыялект)
+Name[be@latin]=Sierbskaja (jekaŭski dyjaliekt)
 Name[bg]=Сръбски йекавски
 Name[bs]=srpski ijekavski
 Name[ca]=Serbi ijekavski
@@ -31,6 +32,7 @@ Name[id]=Ijekavian Serbia
 Name[is]=Serbneska Ijekavian
 Name[it]=Serbo ijekavo
 Name[ja]=セルビア語イェ方言
+Name[ka]=სერბული ლიეკავიური
 Name[kk]=Лиекав сербше
 Name[km]=ស៊ែប៊ី​យេកាវៀន
 Name[ko]=세르비아어(이예카비아)
@@ -60,7 +62,7 @@ Name[sv]=Ijekavisk serbiska
 Name[ta]=செர்பியன் ஜெகாவியன்
 Name[tg]=Сербӣ
 Name[th]=ภาษาเซอร์เบียอิเจ็คคาเวีย
-Name[tr]=Ijekavian Sırpça
+Name[tr]=İyekavi Sırpçası
 Name[tt]=Сербия (Штокав д.)
 Name[ug]=سېربچە ئىجېكاۋىيان
 Name[uk]=Сербська (ієкавиця)

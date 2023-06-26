@@ -29,12 +29,7 @@ public:
 
     enum Role { Score = Qt::UserRole + 1 };
 
-    enum Column
-    {
-        Column_Command,
-        Column_Shortcut,
-        Column_Count
-    };
+    enum Column { Column_Command, Column_Shortcut, Column_Count };
 
     /**
      * Resets the model
@@ -102,6 +97,8 @@ private:
      * action is at the end
      */
     QStringList m_lastTriggered;
+
+    QAction *m_clearHistoryAction;
 };
 
 #endif // KCOMMANDBARMODEL_H

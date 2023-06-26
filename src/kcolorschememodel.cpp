@@ -68,7 +68,7 @@ KColorSchemeModel::KColorSchemeModel(QObject *parent)
         d->m_data.append(data);
     }
 
-    d->m_data.insert(0, {QStringLiteral("Default"), i18n("Default"), QString(), QIcon::fromTheme("edit-undo")});
+    d->m_data.insert(0, {QStringLiteral("Default"), i18n("Default"), QString(), QIcon::fromTheme(QStringLiteral("edit-undo"))});
     endResetModel();
 }
 
@@ -89,9 +89,9 @@ QVariant KColorSchemeModel::data(const QModelIndex &index, int role) const
     }
 
     switch (role) {
-    case Qt::DisplayRole:
+    case NameRole:
         return d->m_data.at(index.row()).name;
-    case Qt::DecorationRole: {
+    case IconRole: {
         auto &item = d->m_data[index.row()];
         if (item.preview.isNull()) {
             item.preview = KColorSchemeManagerPrivate::createPreview(item.path);

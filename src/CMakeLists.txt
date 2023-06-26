@@ -19,16 +19,31 @@ target_sources(KF5ConfigWidgets PRIVATE
   klanguagename.cpp
   krecentfilesaction.cpp
   kstandardaction.cpp
+  kstatefulbrush.cpp
   ktipdialog.cpp
+
+  kcodecaction.h
+  kcolorscheme.h
+  kcolorschememanager.h
+  kcolorschememodel.h
+  kcommandbar.h
+  kcommandbarmodel_p.h
+  kconfigdialog.h
+  kconfigviewstatesaver.h
+  kconfigdialogmanager.h
+  kcmodule.h
+  khelpclient.h
+  khamburgermenu.h
+  khamburgermenuhelpers_p.h
+  klanguagebutton.h
+  klanguagename.h
+  krecentfilesaction.h
+  kstandardaction.h
+  kstatefulbrush.h
+  ktipdialog.h
 
   kconfigwidgets.qrc
 )
-
-if (WIN32)
-  target_sources(KF5ConfigWidgets PRIVATE
-    windowsmessagesnotifier.cpp
-  )
-endif()
 
 ecm_qt_declare_logging_category(KF5ConfigWidgets
     HEADER kconfigwidgets_debug.h
@@ -42,20 +57,27 @@ if (TARGET Qt${QT_MAJOR_VERSION}::DBus)
     target_sources(KF5ConfigWidgets PRIVATE kpastetextaction.cpp)
 endif()
 
+if (WITH_KAUTH)
+    set(WITH_KAUTH_DEFINE_VALUE 1)
+else()
+    set(WITH_KAUTH_DEFINE_VALUE 0)
+endif()
+set(define_with_kauth_code "#define KCONFIGWIDGETS_WITH_KAUTH ${WITH_KAUTH_DEFINE_VALUE}\n")
+
 ecm_generate_export_header(KF5ConfigWidgets
     BASE_NAME KConfigWidgets
     GROUP_BASE_NAME KF
     VERSION ${KF_VERSION}
     DEPRECATED_BASE_VERSION 0
-    DEPRECATION_VERSIONS 4.0 5.0 5.23 5.32 5.38 5.39 5.64 5.78 5.80 5.82 5.83 5.84 5.85 5.90
+    DEPRECATION_VERSIONS 4.0 5.0 5.23 5.32 5.38 5.39 5.64 5.78 5.80 5.82 5.83 5.84 5.85 5.90 5.93 5.102 5.103
     EXCLUDE_DEPRECATED_BEFORE_AND_AT ${EXCLUDE_DEPRECATED_BEFORE_AND_AT}
+    CUSTOM_CONTENT_FROM_VARIABLE define_with_kauth_code
 )
 
 target_include_directories(KF5ConfigWidgets INTERFACE "$<INSTALL_INTERFACE:${KDE_INSTALL_INCLUDEDIR_KF}/KConfigWidgets>")
 
 target_link_libraries(KF5ConfigWidgets
   PUBLIC
-    KF5::Codecs # KCodecActions uses KCharsets, KEncodingProber
     KF5::WidgetsAddons # For K*Action, KPage*, KViewStateSerializer, KAcceleratorManager, K*GuiItem
     KF5::ConfigGui # KStandardAction uses KStandardShortcut
   PRIVATE
@@ -64,15 +86,27 @@ target_link_libraries(KF5ConfigWidgets
     KF5::I18n # For action and widget texts
 )
 
-if (WIN32)
-  target_link_libraries(KF5ConfigWidgets PRIVATE advapi32)
+if(NOT EXCLUDE_DEPRECATED_BEFORE_AND_AT STREQUAL "CURRENT" AND
+   EXCLUDE_DEPRECATED_BEFORE_AND_AT VERSION_LESS 5.102.0)
+    target_link_libraries(KF5ConfigWidgets
+      PUBLIC
+      KF5::Codecs # KCodecActions uses KCharsets, KEncodingProber
+    )
+else()
+    target_link_libraries(KF5ConfigWidgets
+      PRIVATE
+      KF5::Codecs # KCodecActions uses KCharsets, KEncodingProber
+    )
 endif()
 
-if (TARGET KF5::Auth)
-  target_link_libraries(KF5ConfigWidgets PUBLIC KF5::Auth) # KCModule uses KAuth::Action TODO KF6 Change to KF5::AuthCore
-else()
-  target_compile_definitions(KF5ConfigWidgets PUBLIC -DKCONFIGWIDGETS_NO_KAUTH)
+if (WITH_KAUTH)
+  if (QT_MAJOR_VERSION STREQUAL "6")
+    target_link_libraries(KF5ConfigWidgets PUBLIC KF5::AuthCore)
+  else()
+    target_link_libraries(KF5ConfigWidgets PUBLIC KF5::Auth)
+  endif()
 endif()
+
 if (TARGET Qt${QT_MAJOR_VERSION}::DBus)
   target_link_libraries(KF5ConfigWidgets PRIVATE Qt${QT_MAJOR_VERSION}::DBus) # KPasteTextAction talks to Klipper via DBus
 endif()
@@ -103,6 +137,7 @@ ecm_generate_headers(KConfigWidgets_HEADERS
   KLanguageName
   KPasteTextAction
   KRecentFilesAction
+  KStatefulBrush
   KViewStateMaintainer
   KStandardAction
   KTipDialog
@@ -110,42 +145,7 @@ ecm_generate_headers(KConfigWidgets_HEADERS
   REQUIRED_HEADERS KConfigWidgets_HEADERS
 )
 
-find_package(PythonModuleGeneration)
-
-if (PythonModuleGeneration_FOUND)
-  ecm_generate_python_binding(
-    TARGET KF5::ConfigWidgets
-    PYTHONNAMESPACE PyKF5
-    MODULENAME KConfigWidgets
-    SIP_INCLUDES
-    RULES_FILE "${CMAKE_SOURCE_DIR}/cmake/rules_PyKF5.py"
-    SIP_DEPENDS
-      QtCore/QtCoremod.sip
-      PyKF5/KCodecs/KCodecsmod.sip
-      PyKF5/KWidgetsAddons/KWidgetsAddonsmod.sip
-      PyKF5/KConfigGui/KConfigGuimod.sip
-      PyKF5/KAuth/KAuthmod.sip
-    HEADERS
-      kcodecaction.h
-      kcolorscheme.h
-      kcolorschememanager.h
-      kconfigdialog.h
-      kconfigviewstatesaver.h
-      kconfigdialogmanager.h
-      kcmodule.h
-      khamburgermenu.h
-      kcommandbar.h
-      khelpclient.h
-      klanguagebutton.h
-      kpastetextaction.h
-      krecentfilesaction.h
-      kviewstatemaintainer.h
-      kstandardaction.h
-      ktipdialog.h
-  )
-endif()
-
-install(TARGETS KF5ConfigWidgets EXPORT KF5ConfigWidgetsTargets ${KF5_INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5ConfigWidgets EXPORT KF5ConfigWidgetsTargets ${KF_INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/kconfigwidgets_export.h

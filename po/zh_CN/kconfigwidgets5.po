@@ -1,22 +1,9 @@
-# translation of kdelibs4.po to Chinese Simplified
-# Copyright (C) 2007 Free Software Foundation, Inc.
-#
-# Lie Ex <lilith.ex@gmail.com> 2007-2011.
-# Wang Jian <lark@linux.ustc.edu.cn>, 1998.
-# Sarah Smith <sarahs@redhat.com>, 2002.
-# Xiong Jiang <jxiong@offtopic.org>, 2002,2003,2004.
-# Funda Wang <fundawang@linux.net.cn>, 2002,2003,2004.
-# Liang Qi <cavendish.qi@gmail.com>, 2007.
-# Feng Chao <chaofeng111@qq.com>, 2010, 2012, 2014, 2020.
-# Ni Hui <shuizhuyuanluo@126.com>, 2010, 2011, 2012.
-# Weng Xuetian <wengxt@gmail.com>, 2011, 2012, 2013, 2015, 2016.
-# Guo Yunhe <guoyunhebrave@gmail.com>, 2017.
 msgid ""
 msgstr ""
 "Project-Id-Version: kdeorg\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
-"POT-Creation-Date: 2021-12-26 00:40+0000\n"
-"PO-Revision-Date: 2021-12-22 14:05\n"
+"POT-Creation-Date: 2022-12-08 00:42+0000\n"
+"PO-Revision-Date: 2023-01-12 10:30\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
@@ -42,29 +29,29 @@ msgstr ""
 "kde-china@kde.org, chaofeng111@gmail.com, i@guoyunhe.me, tysontan@tysontan."
 "com"
 
-#: kcmodule.cpp:189
+#: kcmodule.cpp:198
 #, kde-format
 msgid "You will be asked to authenticate before saving"
 msgstr "在保存前您将需要进行身份验证"
 
-#: kcmodule.cpp:193
+#: kcmodule.cpp:202
 #, kde-format
 msgid "You are not allowed to save the configuration"
 msgstr "您不具备保存配置的权限"
 
-#: kcodecaction.cpp:66
+#: kcodecaction.cpp:67
 #, kde-format
 msgctxt "Encodings menu"
 msgid "Default"
 msgstr "默认"
 
-#: kcodecaction.cpp:74
+#: kcodecaction.cpp:75
 #, kde-format
 msgctxt "Encodings menu"
 msgid "Autodetect"
 msgstr "自动检测"
 
-#: kcolorschememanager.cpp:200 kcolorschememanager.cpp:205
+#: kcolorschememanager.cpp:220 kcolorschememanager.cpp:229
 #, kde-format
 msgid "Color Scheme"
 msgstr "配色方案"
@@ -74,7 +61,7 @@ msgstr "配色方案"
 msgid "Default"
 msgstr "默认"
 
-#: kcommandbar.cpp:584
+#: kcommandbar.cpp:560
 #, kde-format
 msgid "No commands matching the filter"
 msgstr "没有匹配该筛选条件的命令"
@@ -85,67 +72,71 @@ msgctxt "@title:window"
 msgid "Configure"
 msgstr "配置"
 
-#: khamburgermenu.cpp:126
+#: khamburgermenu.cpp:125
 #, kde-format
 msgctxt "@action:inmenu General purpose menu"
 msgid "&Menu"
 msgstr "菜单(&M)"
 
-#: khamburgermenu.cpp:342
+#: khamburgermenu.cpp:326
+#, kde-format
+msgctxt "@action:inmenu A menu item that advertises and enables the menubar"
+msgid "Show &Menubar with All Actions"
+msgstr "显示包含所有操作的菜单栏(&M)"
+
+#: khamburgermenu.cpp:352
 #, kde-format
 msgctxt "@action:inmenu A menu text advertising its contents (more features)."
-msgid "For %1 more action:"
-msgid_plural "For %1 more actions:"
-msgstr[0] "显示 %1 种额外操作："
+msgid "More"
+msgstr "更多"
 
-#: khamburgermenu.cpp:345
+#: khamburgermenu.cpp:353
 #, kde-format
 msgctxt ""
 "@action:inmenu A section heading advertising the contents of the menu bar"
-msgid "%1 Menu Bar Exclusive Action"
-msgid_plural "%1 Menu Bar Exclusive Actions"
-msgstr[0] "%1 种菜单栏特有操作"
+msgid "More Actions"
+msgstr "更多操作"
 
-#: krecentfilesaction.cpp:68
+#: krecentfilesaction.cpp:71
 #, kde-format
 msgid "No Entries"
 msgstr "无项目"
 
-#: krecentfilesaction.cpp:74
+#: krecentfilesaction.cpp:77
 #, kde-format
 msgid "Clear List"
 msgstr "清空列表"
 
-#: kstandardaction.cpp:140
+#: kstandardaction.cpp:157
 #, kde-format
 msgctxt "go back"
 msgid "&Back"
 msgstr "后退(&B)"
 
-#: kstandardaction.cpp:147
+#: kstandardaction.cpp:164
 #, kde-format
 msgctxt "go forward"
 msgid "&Forward"
 msgstr "前进(&F)"
 
-#: kstandardaction.cpp:154
+#: kstandardaction.cpp:171
 #, kde-format
 msgctxt "home page"
 msgid "&Home"
 msgstr "主页(&H)"
 
-#: kstandardaction.cpp:158
+#: kstandardaction.cpp:175
 #, kde-format
 msgctxt "show help"
 msgid "&Help"
 msgstr "帮助(&H)"
 
-#: kstandardaction.cpp:215
+#: kstandardaction.cpp:232
 #, kde-format
 msgid "Show Menubar<p>Shows the menubar again after it has been hidden</p>"
 msgstr "显示菜单栏<p>在菜单栏隐藏时重新显示它</p>"
 
-#: kstandardaction.cpp:236
+#: kstandardaction.cpp:253
 #, kde-format
 msgid ""
 "Show Statusbar<p>Shows the statusbar, which is the bar at the bottom of the "
@@ -309,8 +300,8 @@ msgid "&Replace..."
 msgstr "替换(&R)..."
 
 #: kstandardaction_p.h:58
-msgid "&Actual Size"
-msgstr "实际大小(&A)"
+msgid "Zoom to &Actual Size"
+msgstr "缩放为实际大小(&A)"
 
 #: kstandardaction_p.h:58
 msgid "View document at its actual size"
@@ -547,31 +538,31 @@ msgstr "捐款(&D)"
 msgid "Open &Menu"
 msgstr "打开菜单(&M)"
 
-#: ktipdialog.cpp:219
+#: ktipdialog.cpp:222
 #, kde-format
 msgctxt "@title:window"
 msgid "Tip of the Day"
 msgstr "每日提示"
 
-#: ktipdialog.cpp:235
+#: ktipdialog.cpp:238
 #, kde-format
 msgctxt "@title"
 msgid "Did you know...?\n"
 msgstr "您知道吗...？\n"
 
-#: ktipdialog.cpp:288
+#: ktipdialog.cpp:291
 #, kde-format
 msgctxt "@option:check"
 msgid "&Show tips on startup"
 msgstr "在启动时显示使用提示(&S)"
 
-#: ktipdialog.cpp:293
+#: ktipdialog.cpp:296
 #, kde-format
 msgctxt "@action:button Goes to previous tip"
 msgid "&Previous"
 msgstr "上一个(&P)"
 
-#: ktipdialog.cpp:298
+#: ktipdialog.cpp:301
 #, kde-format
 msgctxt "@action:button Goes to next tip, opposite to previous"
 msgid "&Next"

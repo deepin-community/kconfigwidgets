@@ -6,13 +6,13 @@
 */
 
 #include "kstandardaction.h"
-#include "kconfigwidgets_debug.h"
 #include "kstandardaction_p.h"
 #include "moc_kstandardaction_p.cpp"
 
 #include <KAboutData>
 #include <KAcceleratorManager>
 #include <KLocalizedString>
+#include <KStandardShortcutWatcher>
 #include <QGuiApplication>
 #include <QLayout>
 #include <QMainWindow>
@@ -22,13 +22,30 @@
 
 namespace KStandardAction
 {
-AutomaticAction::AutomaticAction(const QIcon &icon, const QString &text, const QList<QKeySequence> &shortcut, const char *slot, QObject *parent)
+AutomaticAction::AutomaticAction(const QIcon &icon,
+                                 const QString &text,
+                                 KStandardShortcut::StandardShortcut standardShortcut,
+                                 const char *slot,
+                                 QObject *parent)
     : QAction(parent)
 {
     setText(text);
     setIcon(icon);
+
+    const QList<QKeySequence> shortcut = KStandardShortcut::shortcut(standardShortcut);
     setShortcuts(shortcut);
     setProperty("defaultShortcuts", QVariant::fromValue(shortcut));
+    connect(KStandardShortcut::shortcutWatcher(),
+            &KStandardShortcut::StandardShortcutWatcher::shortcutChanged,
+            this,
+            [standardShortcut, this](KStandardShortcut::StandardShortcut id, const QList<QKeySequence> &newShortcut) {
+                if (id != standardShortcut) {
+                    return;
+                }
+                setShortcuts(newShortcut);
+                setProperty("defaultShortcuts", QVariant::fromValue(newShortcut));
+            });
+
     connect(this, SIGNAL(triggered()), this, slot);
 }
 
@@ -134,7 +151,7 @@ QAction *_k_createInternal(StandardAction id, QObject *parent)
 
     if (pInfo) {
         QString sLabel;
-        QString iconName = pInfo->psIconName;
+        QString iconName = QLatin1String(pInfo->psIconName);
         switch (id) {
         case Back:
             sLabel = i18nc("go back", "&Back");
@@ -265,8 +282,7 @@ QAction *_k_createInternal(StandardAction id, QObject *parent)
 #endif
             break;
         }
-        case HamburgerMenu:
-        {
+        case HamburgerMenu: {
             pAction = new KHamburgerMenu(parent);
             break;
         }
@@ -309,8 +325,18 @@ QAction *_k_createInternal(StandardAction id, QObject *parent)
             pAction->setShortcuts(cut);
             pAction->setProperty("defaultShortcuts", QVariant::fromValue(cut));
         }
+        pAction->connect(KStandardShortcut::shortcutWatcher(),
+                         &KStandardShortcut::StandardShortcutWatcher::shortcutChanged,
+                         pAction,
+                         [pAction, shortcut = pInfo->idAccel](KStandardShortcut::StandardShortcut id, const QList<QKeySequence> &newShortcut) {
+                             if (id != shortcut) {
+                                 return;
+                             }
+                             pAction->setShortcuts(newShortcut);
+                             pAction->setProperty("defaultShortcuts", QVariant::fromValue(newShortcut));
+                         });
 
-        pAction->setObjectName(pInfo->psName);
+        pAction->setObjectName(QLatin1String(pInfo->psName));
     }
 
     if (pAction && parent && parent->inherits("KActionCollection")) {
@@ -592,10 +618,9 @@ static QAction *buildAutomaticAction(QObject *parent, StandardAction id, const c
         return nullptr;
     }
 
-    AutomaticAction *action =
-        new AutomaticAction(QIcon::fromTheme(p->psIconName), p->psLabel.toString(), KStandardShortcut::shortcut(p->idAccel), slot, parent);
+    AutomaticAction *action = new AutomaticAction(QIcon::fromTheme(QLatin1String(p->psIconName)), p->psLabel.toString(), p->idAccel, slot, parent);
 
-    action->setObjectName(p->psName);
+    action->setObjectName(QLatin1String(p->psName));
     if (!p->psToolTip.isEmpty()) {
         action->setToolTip(p->psToolTip.toString());
     }
