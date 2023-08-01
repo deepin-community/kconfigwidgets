@@ -1,3 +1,9 @@
+kconfigwidgets (5.103.0-1deepin1) unstable; urgency=medium
+
+  * Fix symbols
+
+ -- Han Gao <gaohan@iscas.ac.cn>  Fri, 02 Jun 2023 22:26:46 +0800
+
 kconfigwidgets (5.103.0-1) unstable; urgency=medium
 
   [ Aurélien COUDERC ]
